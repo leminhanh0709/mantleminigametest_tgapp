@@ -2,141 +2,1484 @@
 <html lang="en">
 <head>
   <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
+  <meta name="theme-color" content="#ffffff">
+
   <title>Mantle Trading Arena</title>
 
   <script src="https://telegram.org/js/telegram-web-app.js"></script>
 
   <style>
+    :root {
+      --bg: #f5f5f5;
+      --card: #ffffff;
+      --text: #111111;
+      --muted: #777777;
+      --border: #e8e8e8;
+      --mantle: #7b61ff;
+      --mantle-light: #eeeaff;
+      --green: #18a957;
+      --green-light: #e9f8ef;
+      --red: #e5484d;
+      --red-light: #fdebec;
+    }
+
     * {
       box-sizing: border-box;
     }
 
+    html,
     body {
       margin: 0;
-      padding: 20px;
-      font-family: Arial, sans-serif;
-      background: #f5f5f5;
-      color: #111;
+      padding: 0;
+      width: 100%;
+      min-height: 100%;
     }
 
-    .app {
-      max-width: 480px;
-      margin: 0 auto;
-    }
+    body {
+      font-family:
+        -apple-system,
+        BlinkMacSystemFont,
+        "Segoe UI",
+        Roboto,
+        Helvetica,
+        Arial,
+        sans-serif;
 
-    .header {
-      margin-bottom: 24px;
-    }
-
-    .title {
-      font-size: 28px;
-      font-weight: 700;
-      margin-bottom: 6px;
-    }
-
-    .subtitle {
-      color: #666;
-      font-size: 14px;
-    }
-
-    .balance {
-      background: white;
-      border-radius: 16px;
-      padding: 20px;
-      margin-bottom: 16px;
-    }
-
-    .balance-label {
-      color: #777;
-      font-size: 13px;
-      margin-bottom: 8px;
-    }
-
-    .balance-value {
-      font-size: 32px;
-      font-weight: 700;
-    }
-
-    .card {
-      background: white;
-      border-radius: 16px;
-      padding: 20px;
-    }
-
-    .stock {
-      font-size: 20px;
-      font-weight: 700;
-    }
-
-    .price {
-      font-size: 32px;
-      font-weight: 700;
-      margin-top: 8px;
-    }
-
-    .status {
-      margin-top: 12px;
-      padding: 12px;
-      background: #f0f0f0;
-      border-radius: 10px;
-      font-size: 14px;
+      background: var(--bg);
+      color: var(--text);
+      -webkit-font-smoothing: antialiased;
     }
 
     button {
+      font: inherit;
+    }
+
+    .app {
       width: 100%;
-      margin-top: 20px;
-      padding: 15px;
-      border: none;
+      max-width: 520px;
+      margin: 0 auto;
+      padding: 18px 16px 90px;
+    }
+
+    /* HEADER */
+
+    .topbar {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      margin-bottom: 22px;
+    }
+
+    .brand {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+    }
+
+    .mantle-mark {
+      width: 38px;
+      height: 38px;
       border-radius: 12px;
+      background: var(--mantle);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      color: white;
+      font-size: 19px;
+      font-weight: 800;
+    }
+
+    .brand-name {
+      font-size: 17px;
+      font-weight: 750;
+    }
+
+    .brand-subtitle {
+      font-size: 11px;
+      color: var(--muted);
+      margin-top: 2px;
+    }
+
+    .avatar {
+      width: 40px;
+      height: 40px;
+      border-radius: 50%;
+      background: #ddd;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      overflow: hidden;
+      font-weight: 700;
+    }
+
+    .avatar img {
+      width: 100%;
+      height: 100%;
+      object-fit: cover;
+    }
+
+    /* PAGES */
+
+    .page {
+      display: none;
+    }
+
+    .page.active {
+      display: block;
+    }
+
+    .page-title {
+      font-size: 27px;
+      font-weight: 800;
+      letter-spacing: -0.7px;
+      margin-bottom: 5px;
+    }
+
+    .page-description {
+      color: var(--muted);
+      font-size: 14px;
+      margin-bottom: 20px;
+    }
+
+    /* BALANCE */
+
+    .balance-card {
+      background: var(--card);
+      border-radius: 22px;
+      padding: 22px;
+      margin-bottom: 14px;
+      border: 1px solid var(--border);
+    }
+
+    .balance-label {
+      color: var(--muted);
+      font-size: 13px;
+      margin-bottom: 7px;
+    }
+
+    .balance-value {
+      font-size: 35px;
+      line-height: 1;
+      font-weight: 800;
+      letter-spacing: -1px;
+    }
+
+    .balance-unit {
+      margin-top: 7px;
+      color: var(--muted);
+      font-size: 13px;
+    }
+
+    /* PROFILE */
+
+    .profile-card {
+      background: var(--card);
+      border-radius: 18px;
+      padding: 16px;
+      border: 1px solid var(--border);
+      display: flex;
+      align-items: center;
+      gap: 13px;
+      margin-bottom: 14px;
+    }
+
+    .profile-avatar {
+      width: 46px;
+      height: 46px;
+      border-radius: 50%;
+      background: var(--mantle-light);
+      color: var(--mantle);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-weight: 800;
+      font-size: 17px;
+      overflow: hidden;
+    }
+
+    .profile-avatar img {
+      width: 100%;
+      height: 100%;
+      object-fit: cover;
+    }
+
+    .profile-name {
+      font-weight: 700;
+      font-size: 15px;
+    }
+
+    .profile-username {
+      color: var(--muted);
+      font-size: 13px;
+      margin-top: 3px;
+    }
+
+    .telegram-badge {
+      margin-left: auto;
+      font-size: 11px;
+      background: #f0f0f0;
+      padding: 6px 9px;
+      border-radius: 8px;
+      color: var(--muted);
+    }
+
+    /* QUICK ACTION */
+
+    .section-title {
+      font-size: 16px;
+      font-weight: 750;
+      margin: 23px 0 11px;
+    }
+
+    .action-card {
+      background: var(--card);
+      border: 1px solid var(--border);
+      border-radius: 18px;
+      padding: 17px;
+      display: flex;
+      align-items: center;
+      gap: 14px;
+      cursor: pointer;
+      transition: transform 0.15s ease;
+    }
+
+    .action-card:active {
+      transform: scale(0.98);
+    }
+
+    .action-icon {
+      width: 44px;
+      height: 44px;
+      border-radius: 13px;
+      background: var(--mantle-light);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 21px;
+    }
+
+    .action-content {
+      flex: 1;
+    }
+
+    .action-title {
+      font-weight: 700;
+      font-size: 15px;
+    }
+
+    .action-description {
+      color: var(--muted);
+      font-size: 12px;
+      margin-top: 4px;
+    }
+
+    .arrow {
+      color: #aaa;
+      font-size: 20px;
+    }
+
+    /* QUEST */
+
+    .coming-card {
+      background: var(--card);
+      border: 1px solid var(--border);
+      border-radius: 22px;
+      padding: 42px 25px;
+      text-align: center;
+      margin-top: 15px;
+    }
+
+    .coming-icon {
+      width: 64px;
+      height: 64px;
+      margin: 0 auto 17px;
+      border-radius: 20px;
+      background: #f0f0f0;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 29px;
+    }
+
+    .coming-title {
+      font-size: 20px;
+      font-weight: 800;
+    }
+
+    .coming-description {
+      color: var(--muted);
+      font-size: 13px;
+      line-height: 1.5;
+      max-width: 280px;
+      margin: 8px auto 0;
+    }
+
+    /* PREDICTION */
+
+    .market-selector {
+      background: var(--card);
+      border: 1px solid var(--border);
+      border-radius: 17px;
+      padding: 14px 16px;
+      width: 100%;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      cursor: pointer;
+      margin-bottom: 12px;
+    }
+
+    .market-left {
+      display: flex;
+      align-items: center;
+      gap: 11px;
+    }
+
+    .stock-icon {
+      width: 40px;
+      height: 40px;
+      border-radius: 12px;
+      background: #f0f0f0;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-weight: 800;
+      font-size: 13px;
+    }
+
+    .market-symbol {
+      font-weight: 800;
+      font-size: 15px;
+    }
+
+    .market-name {
+      color: var(--muted);
+      font-size: 12px;
+      margin-top: 3px;
+    }
+
+    .market-arrow {
+      color: #aaa;
+    }
+
+    .price-card {
+      background: var(--card);
+      border: 1px solid var(--border);
+      border-radius: 22px;
+      padding: 20px;
+      margin-bottom: 12px;
+    }
+
+    .price-header {
+      display: flex;
+      justify-content: space-between;
+      align-items: flex-start;
+    }
+
+    .current-label {
+      color: var(--muted);
+      font-size: 12px;
+    }
+
+    .current-price {
+      font-size: 31px;
+      font-weight: 800;
+      letter-spacing: -0.8px;
+      margin-top: 5px;
+    }
+
+    .price-change {
+      background: var(--green-light);
+      color: var(--green);
+      padding: 7px 9px;
+      border-radius: 9px;
+      font-size: 12px;
+      font-weight: 700;
+    }
+
+    /* CHART */
+
+    .chart {
+      width: 100%;
+      height: 120px;
+      margin-top: 18px;
+    }
+
+    .chart svg {
+      width: 100%;
+      height: 100%;
+      overflow: visible;
+    }
+
+    .chart-line {
+      fill: none;
+      stroke: var(--mantle);
+      stroke-width: 3;
+      stroke-linecap: round;
+      stroke-linejoin: round;
+    }
+
+    .chart-fill {
+      fill: url(#chartGradient);
+      opacity: 0.15;
+    }
+
+    /* ROUND */
+
+    .round-card {
+      background: var(--card);
+      border: 1px solid var(--border);
+      border-radius: 22px;
+      padding: 20px;
+    }
+
+    .round-label {
+      text-align: center;
+      color: var(--muted);
+      font-size: 12px;
+    }
+
+    .countdown {
+      text-align: center;
+      font-size: 27px;
+      font-weight: 800;
+      margin-top: 4px;
+    }
+
+    .question {
+      text-align: center;
       font-size: 16px;
       font-weight: 700;
+      margin: 22px 0 13px;
+    }
+
+    .direction-buttons {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 10px;
+    }
+
+    .direction {
+      border: 2px solid var(--border);
+      background: white;
+      border-radius: 15px;
+      padding: 15px 10px;
       cursor: pointer;
+      min-height: 76px;
+    }
+
+    .direction-icon {
+      font-size: 24px;
+      line-height: 1;
+    }
+
+    .direction-label {
+      margin-top: 7px;
+      font-weight: 750;
+      font-size: 14px;
+    }
+
+    .direction.up.selected {
+      border-color: var(--green);
+      background: var(--green-light);
+      color: var(--green);
+    }
+
+    .direction.down.selected {
+      border-color: var(--red);
+      background: var(--red-light);
+      color: var(--red);
+    }
+
+    .stake-label {
+      display: flex;
+      justify-content: space-between;
+      margin-top: 20px;
+      margin-bottom: 8px;
+      font-size: 13px;
+      color: var(--muted);
+    }
+
+    .stake-options {
+      display: grid;
+      grid-template-columns: repeat(4, 1fr);
+      gap: 7px;
+    }
+
+    .stake {
+      border: 1px solid var(--border);
+      background: #fafafa;
+      border-radius: 10px;
+      padding: 10px 4px;
+      font-size: 12px;
+      font-weight: 700;
+      cursor: pointer;
+    }
+
+    .stake.selected {
+      border-color: var(--mantle);
+      background: var(--mantle-light);
+      color: var(--mantle);
+    }
+
+    .predict-button {
+      width: 100%;
+      border: none;
+      background: var(--mantle);
+      color: white;
+      border-radius: 15px;
+      padding: 16px;
+      font-weight: 800;
+      margin-top: 17px;
+      cursor: pointer;
+    }
+
+    .predict-button:disabled {
+      opacity: 0.45;
+      cursor: default;
+    }
+
+    .note {
+      text-align: center;
+      color: var(--muted);
+      font-size: 10px;
+      margin-top: 10px;
+    }
+
+    /* BOTTOM NAV */
+
+    .bottom-nav {
+      position: fixed;
+      left: 50%;
+      bottom: 12px;
+      transform: translateX(-50%);
+      width: calc(100% - 24px);
+      max-width: 500px;
+      background: rgba(255, 255, 255, 0.96);
+      border: 1px solid var(--border);
+      border-radius: 19px;
+      padding: 7px;
+      display: grid;
+      grid-template-columns: repeat(3, 1fr);
+      gap: 4px;
+      box-shadow: 0 8px 30px rgba(0,0,0,0.08);
+      z-index: 10;
+    }
+
+    .nav-button {
+      border: none;
+      background: transparent;
+      border-radius: 14px;
+      padding: 9px 5px;
+      color: var(--muted);
+      cursor: pointer;
+      font-size: 11px;
+      font-weight: 650;
+    }
+
+    .nav-icon {
+      font-size: 18px;
+      display: block;
+      margin-bottom: 3px;
+    }
+
+    .nav-button.active {
+      background: var(--mantle-light);
+      color: var(--mantle);
+    }
+
+    /* TOAST */
+
+    .toast {
+      position: fixed;
+      left: 50%;
+      bottom: 88px;
+      transform: translateX(-50%) translateY(15px);
+      background: #111;
+      color: white;
+      padding: 11px 15px;
+      border-radius: 12px;
+      font-size: 13px;
+      opacity: 0;
+      pointer-events: none;
+      transition: all 0.2s ease;
+      z-index: 20;
+      white-space: nowrap;
+    }
+
+    .toast.show {
+      opacity: 1;
+      transform: translateX(-50%) translateY(0);
+    }
+
+    @media (prefers-color-scheme: dark) {
+      body {
+        background: #181818;
+        color: #ffffff;
+      }
+
+      .card,
+      .balance-card,
+      .profile-card,
+      .action-card,
+      .coming-card,
+      .market-selector,
+      .price-card,
+      .round-card,
+      .bottom-nav {
+        background: #242424;
+        border-color: #333;
+      }
+
+      .direction,
+      .stake {
+        background: #242424;
+        border-color: #383838;
+        color: white;
+      }
+
+      .stake {
+        background: #292929;
+      }
+
+      .bottom-nav {
+        background: rgba(36,36,36,0.96);
+      }
     }
   </style>
 </head>
 
 <body>
 
-  <div class="app">
+<div class="app">
 
-    <div class="header">
-      <div class="title">Trading Arena</div>
-      <div class="subtitle">Tokenized Stock Prediction</div>
-    </div>
+  <!-- TOP BAR -->
+  <div class="topbar">
+    <div class="brand">
+      <div class="mantle-mark">M</div>
 
-    <div class="balance">
-      <div class="balance-label">Virtual Balance</div>
-      <div class="balance-value">10,000 Credits</div>
-    </div>
-
-    <div class="card">
-      <div class="stock">NVDAX</div>
-      <div class="price">$176.42</div>
-
-      <div class="status">
-        Prediction market coming soon...
+      <div>
+        <div class="brand-name">Mantle Arena</div>
+        <div class="brand-subtitle">Community Prediction Game</div>
       </div>
-
-      <button id="testButton">
-        Test Mini App
-      </button>
     </div>
 
+    <div class="avatar" id="topAvatar">M</div>
   </div>
 
-  <script>
-    const tg = window.Telegram.WebApp;
 
-    tg.ready();
-    tg.expand();
+  <!-- HOME -->
+  <section class="page active" id="homePage">
 
-    document
-      .getElementById("testButton")
-      .addEventListener("click", function () {
-        tg.showAlert("Mini App is working!");
-      });
-  </script>
+    <div class="page-title">Welcome back 👋</div>
+    <div class="page-description">
+      Your Mantle community account
+    </div>
+
+    <div class="balance-card">
+
+      <div class="balance-label">
+        YOUR BALANCE
+      </div>
+
+      <div class="balance-value" id="balanceValue">
+        10,000
+      </div>
+
+      <div class="balance-unit">
+        Virtual Credits
+      </div>
+
+    </div>
+
+
+    <div class="profile-card">
+
+      <div class="profile-avatar" id="profileAvatar">
+        M
+      </div>
+
+      <div>
+        <div class="profile-name" id="profileName">
+          Mantle Member
+        </div>
+
+        <div class="profile-username" id="profileUsername">
+          @telegram_user
+        </div>
+      </div>
+
+      <div class="telegram-badge">
+        Telegram
+      </div>
+
+    </div>
+
+
+    <div class="section-title">
+      Play
+    </div>
+
+
+    <div class="action-card" id="predictionAction">
+
+      <div class="action-icon">
+        📈
+      </div>
+
+      <div class="action-content">
+
+        <div class="action-title">
+          Price Prediction
+        </div>
+
+        <div class="action-description">
+          Predict tokenized stock prices
+        </div>
+
+      </div>
+
+      <div class="arrow">
+        ›
+      </div>
+
+    </div>
+
+
+    <div class="action-card" id="questAction" style="margin-top:9px;">
+
+      <div class="action-icon">
+        🧠
+      </div>
+
+      <div class="action-content">
+
+        <div class="action-title">
+          Daily Quest
+        </div>
+
+        <div class="action-description">
+          5 new questions every day
+        </div>
+
+      </div>
+
+      <div class="arrow">
+        ›
+      </div>
+
+    </div>
+
+  </section>
+
+
+  <!-- DAILY QUEST -->
+  <section class="page" id="questPage">
+
+    <div class="page-title">
+      Daily Quest
+    </div>
+
+    <div class="page-description">
+      Complete daily challenges and earn Credits
+    </div>
+
+
+    <div class="coming-card">
+
+      <div class="coming-icon">
+        🔒
+      </div>
+
+      <div class="coming-title">
+        Coming soon
+      </div>
+
+      <div class="coming-description">
+        Daily questions will be available here.
+        Come back every day for new challenges.
+      </div>
+
+    </div>
+
+  </section>
+
+
+  <!-- PRICE PREDICTION -->
+  <section class="page" id="predictionPage">
+
+    <div class="page-title">
+      Price Prediction
+    </div>
+
+    <div class="page-description">
+      Predict where tokenized stocks are heading
+    </div>
+
+
+    <!-- MARKET SELECTOR -->
+    <button class="market-selector" id="marketSelector">
+
+      <div class="market-left">
+
+        <div class="stock-icon" id="stockIcon">
+          NV
+        </div>
+
+        <div>
+
+          <div class="market-symbol" id="marketSymbol">
+            NVDAX
+          </div>
+
+          <div class="market-name" id="marketName">
+            NVIDIA Tokenized Stock
+          </div>
+
+        </div>
+
+      </div>
+
+      <div class="market-arrow">
+        ›
+      </div>
+
+    </button>
+
+
+    <!-- PRICE -->
+    <div class="price-card">
+
+      <div class="price-header">
+
+        <div>
+
+          <div class="current-label">
+            CURRENT PRICE
+          </div>
+
+          <div class="current-price" id="currentPrice">
+            $176.42
+          </div>
+
+        </div>
+
+        <div class="price-change">
+          +1.82%
+        </div>
+
+      </div>
+
+
+      <div class="chart">
+
+        <svg viewBox="0 0 500 120" preserveAspectRatio="none">
+
+          <defs>
+
+            <linearGradient id="chartGradient"
+              x1="0"
+              y1="0"
+              x2="0"
+              y2="1">
+
+              <stop offset="0%" stop-color="#7b61ff"/>
+              <stop offset="100%" stop-color="#7b61ff" stop-opacity="0"/>
+
+            </linearGradient>
+
+          </defs>
+
+          <path
+            class="chart-fill"
+            d="M0,100 L30,92 L60,96 L90,70 L120,78 L150,61 L180,66 L210,52 L240,58 L270,38 L300,45 L330,28 L360,34 L390,19 L420,27 L450,10 L500,5 L500,120 L0,120 Z"
+          />
+
+          <path
+            class="chart-line"
+            d="M0,100 L30,92 L60,96 L90,70 L120,78 L150,61 L180,66 L210,52 L240,58 L270,38 L300,45 L330,28 L360,34 L390,19 L420,27 L450,10 L500,5"
+          />
+
+        </svg>
+
+      </div>
+
+    </div>
+
+
+    <!-- PREDICTION ROUND -->
+    <div class="round-card">
+
+      <div class="round-label">
+        ROUND ENDS IN
+      </div>
+
+      <div class="countdown" id="countdown">
+        04:59
+      </div>
+
+
+      <div class="question">
+        Will NVDAX be higher or lower
+        in 5 minutes?
+      </div>
+
+
+      <div class="direction-buttons">
+
+        <button
+          class="direction up"
+          id="upButton"
+          type="button"
+        >
+
+          <div class="direction-icon">
+            ↑
+          </div>
+
+          <div class="direction-label">
+            UP
+          </div>
+
+        </button>
+
+
+        <button
+          class="direction down"
+          id="downButton"
+          type="button"
+        >
+
+          <div class="direction-icon">
+            ↓
+          </div>
+
+          <div class="direction-label">
+            DOWN
+          </div>
+
+        </button>
+
+      </div>
+
+
+      <div class="stake-label">
+
+        <span>
+          Stake
+        </span>
+
+        <span id="stakeDisplay">
+          100 Credits
+        </span>
+
+      </div>
+
+
+      <div class="stake-options">
+
+        <button class="stake selected" data-stake="100">
+          100
+        </button>
+
+        <button class="stake" data-stake="500">
+          500
+        </button>
+
+        <button class="stake" data-stake="1000">
+          1,000
+        </button>
+
+        <button class="stake" data-stake="5000">
+          5,000
+        </button>
+
+      </div>
+
+
+      <button
+        class="predict-button"
+        id="predictButton"
+        disabled
+      >
+        Select UP or DOWN
+      </button>
+
+
+      <div class="note">
+        Simulation only · Virtual Credits have no monetary value
+      </div>
+
+    </div>
+
+  </section>
+
+</div>
+
+
+<!-- BOTTOM NAV -->
+
+<nav class="bottom-nav">
+
+  <button
+    class="nav-button active"
+    data-page="homePage"
+    type="button"
+  >
+
+    <span class="nav-icon">🏠</span>
+    Home
+
+  </button>
+
+
+  <button
+    class="nav-button"
+    data-page="questPage"
+    type="button"
+  >
+
+    <span class="nav-icon">🧠</span>
+    Daily Quest
+
+  </button>
+
+
+  <button
+    class="nav-button"
+    data-page="predictionPage"
+    type="button"
+  >
+
+    <span class="nav-icon">📈</span>
+    Prediction
+
+  </button>
+
+</nav>
+
+
+<div class="toast" id="toast"></div>
+
+
+<script>
+
+  const tg = window.Telegram.WebApp;
+
+  tg.ready();
+  tg.expand();
+
+
+  /* -------------------------
+     TELEGRAM USER
+  ------------------------- */
+
+  const user = tg.initDataUnsafe?.user;
+
+  if (user) {
+
+    const name =
+      user.first_name ||
+      "Mantle Member";
+
+    const username =
+      user.username
+        ? "@" + user.username
+        : "@telegram_user";
+
+
+    document.getElementById("profileName").textContent = name;
+
+    document.getElementById("profileUsername").textContent = username;
+
+
+    const initials =
+      (
+        (user.first_name || "") +
+        (user.last_name || "")
+      )
+      .trim()
+      .slice(0, 2)
+      .toUpperCase();
+
+
+    document.getElementById("topAvatar").textContent =
+      initials || "M";
+
+    document.getElementById("profileAvatar").textContent =
+      initials || "M";
+
+  }
+
+
+  /* -------------------------
+     NAVIGATION
+  ------------------------- */
+
+  const pages =
+    document.querySelectorAll(".page");
+
+  const navButtons =
+    document.querySelectorAll(".nav-button");
+
+
+  function openPage(pageId) {
+
+    pages.forEach(page => {
+      page.classList.toggle(
+        "active",
+        page.id === pageId
+      );
+    });
+
+
+    navButtons.forEach(button => {
+
+      button.classList.toggle(
+        "active",
+        button.dataset.page === pageId
+      );
+
+    });
+
+    window.scrollTo({
+      top: 0,
+      behavior: "smooth"
+    });
+
+  }
+
+
+  navButtons.forEach(button => {
+
+    button.addEventListener(
+      "click",
+      () => openPage(button.dataset.page)
+    );
+
+  });
+
+
+  document
+    .getElementById("predictionAction")
+    .addEventListener(
+      "click",
+      () => openPage("predictionPage")
+    );
+
+
+  document
+    .getElementById("questAction")
+    .addEventListener(
+      "click",
+      () => openPage("questPage")
+    );
+
+
+  /* -------------------------
+     STOCK MOCK DATA
+  ------------------------- */
+
+  const stocks = [
+
+    {
+      symbol: "NVDAX",
+      name: "NVIDIA Tokenized Stock",
+      icon: "NV",
+      price: 176.42
+    },
+
+    {
+      symbol: "TSLAX",
+      name: "Tesla Tokenized Stock",
+      icon: "TS",
+      price: 344.21
+    },
+
+    {
+      symbol: "AAPLX",
+      name: "Apple Tokenized Stock",
+      icon: "AP",
+      price: 232.18
+    },
+
+    {
+      symbol: "AMZNX",
+      name: "Amazon Tokenized Stock",
+      icon: "AM",
+      price: 231.02
+    }
+
+  ];
+
+
+  let selectedStock = stocks[0];
+
+
+  /* -------------------------
+     MARKET SELECTOR
+  ------------------------- */
+
+  document
+    .getElementById("marketSelector")
+    .addEventListener(
+      "click",
+      () => {
+
+        const nextIndex =
+          (
+            stocks.indexOf(selectedStock) + 1
+          ) % stocks.length;
+
+
+        selectedStock =
+          stocks[nextIndex];
+
+
+        updateStockUI();
+
+      }
+    );
+
+
+  function updateStockUI() {
+
+    document.getElementById("stockIcon").textContent =
+      selectedStock.icon;
+
+    document.getElementById("marketSymbol").textContent =
+      selectedStock.symbol;
+
+    document.getElementById("marketName").textContent =
+      selectedStock.name;
+
+    document.getElementById("currentPrice").textContent =
+      "$" + selectedStock.price.toFixed(2);
+
+    document.querySelector(".question").textContent =
+      "Will " +
+      selectedStock.symbol +
+      " be higher or lower in 5 minutes?";
+
+  }
+
+
+  /* -------------------------
+     PREDICTION
+  ------------------------- */
+
+  let direction = null;
+  let stake = 100;
+
+
+  const upButton =
+    document.getElementById("upButton");
+
+  const downButton =
+    document.getElementById("downButton");
+
+  const predictButton =
+    document.getElementById("predictButton");
+
+
+  function selectDirection(value) {
+
+    direction = value;
+
+
+    upButton.classList.toggle(
+      "selected",
+      value === "up"
+    );
+
+    downButton.classList.toggle(
+      "selected",
+      value === "down"
+    );
+
+
+    predictButton.disabled = false;
+
+    predictButton.textContent =
+      "Predict " +
+      value.toUpperCase() +
+      " · " +
+      stake.toLocaleString() +
+      " Credits";
+
+  }
+
+
+  upButton.addEventListener(
+    "click",
+    () => selectDirection("up")
+  );
+
+
+  downButton.addEventListener(
+    "click",
+    () => selectDirection("down")
+  );
+
+
+  /* -------------------------
+     STAKE
+  ------------------------- */
+
+  document
+    .querySelectorAll(".stake")
+    .forEach(button => {
+
+      button.addEventListener(
+        "click",
+        () => {
+
+          document
+            .querySelectorAll(".stake")
+            .forEach(item =>
+              item.classList.remove("selected")
+            );
+
+
+          button.classList.add("selected");
+
+
+          stake =
+            Number(button.dataset.stake);
+
+
+          document.getElementById(
+            "stakeDisplay"
+          ).textContent =
+            stake.toLocaleString() +
+            " Credits";
+
+
+          if (direction) {
+
+            predictButton.textContent =
+              "Predict " +
+              direction.toUpperCase() +
+              " · " +
+              stake.toLocaleString() +
+              " Credits";
+
+          }
+
+        }
+      );
+
+    });
+
+
+  /* -------------------------
+     TEST PREDICTION
+  ------------------------- */
+
+  predictButton.addEventListener(
+    "click",
+    () => {
+
+      if (!direction) return;
+
+
+      showToast(
+        "Prediction placed: " +
+        direction.toUpperCase() +
+        " · " +
+        stake.toLocaleString() +
+        " Credits"
+      );
+
+
+      predictButton.disabled = true;
+
+      predictButton.textContent =
+        "Prediction placed ✓";
+
+    }
+  );
+
+
+  /* -------------------------
+     COUNTDOWN
+  ------------------------- */
+
+  let seconds = 299;
+
+
+  function updateCountdown() {
+
+    const minutes =
+      Math.floor(seconds / 60)
+        .toString()
+        .padStart(2, "0");
+
+
+    const secs =
+      (seconds % 60)
+        .toString()
+        .padStart(2, "0");
+
+
+    document.getElementById(
+      "countdown"
+    ).textContent =
+      minutes + ":" + secs;
+
+
+    if (seconds > 0) {
+
+      seconds--;
+
+    } else {
+
+      seconds = 299;
+
+    }
+
+  }
+
+
+  setInterval(
+    updateCountdown,
+    1000
+  );
+
+
+  /* -------------------------
+     TOAST
+  ------------------------- */
+
+  let toastTimer;
+
+
+  function showToast(message) {
+
+    const toast =
+      document.getElementById("toast");
+
+
+    toast.textContent =
+      message;
+
+
+    toast.classList.add("show");
+
+
+    clearTimeout(toastTimer);
+
+
+    toastTimer =
+      setTimeout(
+        () => toast.classList.remove("show"),
+        2500
+      );
+
+  }
+
+</script>
 
 </body>
 </html>
