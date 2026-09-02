@@ -2,10 +2,12 @@
 <html lang="en">
 <head>
   <meta charset="UTF-8" />
+
   <meta
     name="viewport"
     content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no"
   />
+
   <title>Mantle Arena</title>
 
   <script src="https://telegram.org/js/telegram-web-app.js"></script>
@@ -145,12 +147,7 @@
       margin-top: 22px;
       padding: 20px;
       border-radius: 20px;
-      background:
-        linear-gradient(
-          135deg,
-          #17171a 0%,
-          #111113 100%
-        );
+      background: #111113;
       border: 1px solid #27272a;
     }
 
@@ -211,12 +208,10 @@
       color: #ffffff;
       cursor: pointer;
       margin-bottom: 10px;
-      transition: transform 0.15s ease, background 0.15s ease;
     }
 
     .play-card:active {
       transform: scale(0.985);
-      background: #18181b;
     }
 
     .play-card-icon {
@@ -358,6 +353,10 @@
       font-size: 16px;
     }
 
+    /* =========================
+       PRICE CARD
+    ========================= */
+
     .price-card {
       border: 1px solid #27272a;
       background: #111113;
@@ -396,44 +395,122 @@
       color: #a1a1aa;
     }
 
+    /* =========================
+       LIVE STATUS
+    ========================= */
+
+    .live-status {
+      display: inline-flex;
+      align-items: center;
+      gap: 5px;
+      color: #71717a;
+      font-size: 10px;
+      margin-top: 7px;
+    }
+
+    .live-dot {
+      width: 6px;
+      height: 6px;
+      border-radius: 50%;
+      background: #71717a;
+    }
+
+    .live-status.connected {
+      color: #4ade80;
+    }
+
+    .live-status.connected .live-dot {
+      background: #4ade80;
+    }
+
+    .live-status.error {
+      color: #f87171;
+    }
+
+    .live-status.error .live-dot {
+      background: #f87171;
+    }
+
+    /* =========================
+       CHART
+    ========================= */
+
+    .chart-header {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      margin-top: 18px;
+      margin-bottom: 8px;
+    }
+
+    .chart-label {
+      color: #71717a;
+      font-size: 10px;
+      font-weight: 700;
+      text-transform: uppercase;
+      letter-spacing: 0.5px;
+    }
+
+    .interval-toggle {
+      display: flex;
+      gap: 3px;
+      padding: 3px;
+      border-radius: 9px;
+      background: #18181b;
+      border: 1px solid #27272a;
+    }
+
+    .interval-button {
+      border: none;
+      background: transparent;
+      color: #71717a;
+      border-radius: 7px;
+      padding: 5px 9px;
+      font-size: 10px;
+      font-weight: 750;
+      cursor: pointer;
+    }
+
+    .interval-button.active {
+      background: #ffffff;
+      color: #111111;
+    }
+
     .chart {
-      margin-top: 20px;
       width: 100%;
-      height: 90px;
+      height: 130px;
       position: relative;
       overflow: hidden;
       border-radius: 12px;
       background:
         linear-gradient(
           to bottom,
-          rgba(255,255,255,0.03) 1px,
+          rgba(255,255,255,0.04) 1px,
           transparent 1px
         );
-      background-size: 100% 30px;
+      background-size: 100% 32px;
     }
 
-    .chart-line {
-      position: absolute;
-      left: 0;
-      top: 0;
-      width: 100%;
-      height: 100%;
-    }
-
-    .chart-line svg {
+    #priceChart {
       width: 100%;
       height: 100%;
       display: block;
     }
 
-    .chart-path {
-      fill: none;
-      stroke: #ffffff;
-      stroke-width: 2.5;
-      stroke-linecap: round;
-      stroke-linejoin: round;
-      opacity: 0.85;
+    .chart-empty {
+      position: absolute;
+      inset: 0;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      color: #52525b;
+      font-size: 11px;
+      pointer-events: none;
     }
+
+    /* =========================
+       ROUND
+    ========================= */
 
     .round-card {
       border: 1px solid #27272a;
@@ -499,6 +576,10 @@
       border-color: #f87171;
       color: #f87171;
     }
+
+    /* =========================
+       STAKE
+    ========================= */
 
     .stake-card {
       border: 1px solid #27272a;
@@ -634,42 +715,6 @@
       transform: translateX(-50%) translateY(0);
     }
 
-    /* =========================
-       LIVE INDICATOR
-    ========================= */
-
-    .live-status {
-      display: inline-flex;
-      align-items: center;
-      gap: 5px;
-      color: #71717a;
-      font-size: 10px;
-      margin-top: 7px;
-    }
-
-    .live-dot {
-      width: 6px;
-      height: 6px;
-      border-radius: 50%;
-      background: #71717a;
-    }
-
-    .live-status.connected {
-      color: #4ade80;
-    }
-
-    .live-status.connected .live-dot {
-      background: #4ade80;
-    }
-
-    .live-status.error {
-      color: #f87171;
-    }
-
-    .live-status.error .live-dot {
-      background: #f87171;
-    }
-
     @media (max-width: 360px) {
       .hero-title,
       .prediction-title,
@@ -697,33 +742,56 @@
     ========================= -->
 
     <header class="header">
+
       <div class="brand">
-        <div class="brand-logo">M</div>
+
+        <div class="brand-logo">
+          M
+        </div>
 
         <div class="brand-text">
-          <div class="brand-title">Mantle Arena</div>
-          <div class="brand-subtitle">Community Mini Game</div>
+
+          <div class="brand-title">
+            Mantle Arena
+          </div>
+
+          <div class="brand-subtitle">
+            Community Mini Game
+          </div>
+
         </div>
+
       </div>
 
-      <div class="telegram-user" id="telegramUser">
+      <div
+        class="telegram-user"
+        id="telegramUser"
+      >
         Guest
       </div>
+
     </header>
 
 
     <!-- =========================
-         HOME PAGE
+         HOME
     ========================= -->
 
-    <section class="page active" id="homePage">
+    <section
+      class="page active"
+      id="homePage"
+    >
 
       <div class="hero">
-        <h1 class="hero-title">Play. Predict. Win.</h1>
+
+        <h1 class="hero-title">
+          Play. Predict. Win.
+        </h1>
 
         <p class="hero-description">
           Test your market instincts with Mantle Arena.
         </p>
+
       </div>
 
 
@@ -733,7 +801,10 @@
           Your Balance
         </div>
 
-        <div class="balance-value" id="balanceValue">
+        <div
+          class="balance-value"
+          id="balanceValue"
+        >
           10,000
         </div>
 
@@ -750,7 +821,10 @@
           Telegram Account
         </div>
 
-        <div class="account-name" id="accountName">
+        <div
+          class="account-name"
+          id="accountName"
+        >
           Guest
         </div>
 
@@ -811,10 +885,13 @@
 
 
     <!-- =========================
-         DAILY QUEST PAGE
+         DAILY QUEST
     ========================= -->
 
-    <section class="page" id="questPage">
+    <section
+      class="page"
+      id="questPage"
+    >
 
       <div class="page-heading">
 
@@ -850,10 +927,13 @@
 
 
     <!-- =========================
-         PREDICTION PAGE
+         PREDICTION
     ========================= -->
 
-    <section class="page" id="predictionPage">
+    <section
+      class="page"
+      id="predictionPage"
+    >
 
       <div class="prediction-header">
 
@@ -868,7 +948,7 @@
       </div>
 
 
-      <!-- MARKET SELECTOR -->
+      <!-- MARKET -->
 
       <button
         class="market-selector"
@@ -878,7 +958,10 @@
 
         <div class="market-left">
 
-          <div class="stock-icon" id="stockIcon">
+          <div
+            class="stock-icon"
+            id="stockIcon"
+          >
             NV
           </div>
 
@@ -935,43 +1018,59 @@
           class="live-status"
           id="liveStatus"
         >
+
           <span class="live-dot"></span>
+
           Connecting to Bybit
+
         </div>
 
 
+        <!-- CHART HEADER -->
+
+        <div class="chart-header">
+
+          <div class="chart-label">
+            Live Market Data
+          </div>
+
+
+          <div class="interval-toggle">
+
+            <button
+              class="interval-button active"
+              data-interval="1"
+              type="button"
+            >
+              1S
+            </button>
+
+            <button
+              class="interval-button"
+              data-interval="5"
+              type="button"
+            >
+              5S
+            </button>
+
+          </div>
+
+        </div>
+
+
+        <!-- CHART -->
+
         <div class="chart">
 
-          <div class="chart-line">
+          <canvas
+            id="priceChart"
+          ></canvas>
 
-            <svg
-              viewBox="0 0 500 100"
-              preserveAspectRatio="none"
-            >
-
-              <path
-                class="chart-path"
-                d="
-                  M0,70
-                  L35,65
-                  L70,72
-                  L105,55
-                  L140,62
-                  L175,48
-                  L210,52
-                  L245,35
-                  L280,43
-                  L315,30
-                  L350,38
-                  L385,24
-                  L420,31
-                  L455,18
-                  L500,22
-                "
-              />
-
-            </svg>
-
+          <div
+            class="chart-empty"
+            id="chartEmpty"
+          >
+            Loading market data...
           </div>
 
         </div>
@@ -993,14 +1092,20 @@
             class="countdown"
             id="countdown"
           >
-            04:59
+            00:30
           </div>
 
         </div>
 
 
         <div class="question">
-          Where will <span id="questionSymbol">NVDAX</span> go next?
+
+          Where will
+          <span id="questionSymbol">
+            NVDAX
+          </span>
+          go next?
+
         </div>
 
 
@@ -1150,9 +1255,7 @@
   </nav>
 
 
-  <!-- =========================
-       TOAST
-  ========================= -->
+  <!-- TOAST -->
 
   <div
     class="toast"
@@ -1168,11 +1271,16 @@
        TELEGRAM
     ===================================================== */
 
-    const tg = window.Telegram?.WebApp;
+    const tg =
+      window.Telegram?.WebApp;
+
 
     if (tg) {
+
       tg.ready();
+
       tg.expand();
+
     }
 
 
@@ -1180,36 +1288,50 @@
        TELEGRAM USER
     ===================================================== */
 
-    const telegramUser = document.getElementById("telegramUser");
-    const accountName = document.getElementById("accountName");
+    const telegramUser =
+      document.getElementById(
+        "telegramUser"
+      );
+
+    const accountName =
+      document.getElementById(
+        "accountName"
+      );
+
 
     const telegramUserData =
-      tg?.initDataUnsafe?.user || null;
+      tg?.initDataUnsafe?.user ||
+      null;
 
 
     if (telegramUserData) {
 
       let displayName =
-        telegramUserData.first_name || "User";
+        telegramUserData.first_name ||
+        "User";
+
 
       if (telegramUserData.last_name) {
-        displayName += " " + telegramUserData.last_name;
+
+        displayName +=
+          " " +
+          telegramUserData.last_name;
+
       }
+
 
       telegramUser.textContent =
         telegramUserData.username
-          ? "@" + telegramUserData.username
+          ? "@" +
+            telegramUserData.username
           : displayName;
+
 
       accountName.textContent =
         telegramUserData.username
-          ? "@" + telegramUserData.username
+          ? "@" +
+            telegramUserData.username
           : displayName;
-
-    } else {
-
-      telegramUser.textContent = "Guest";
-      accountName.textContent = "Guest";
 
     }
 
@@ -1219,35 +1341,72 @@
     ===================================================== */
 
     const pages = {
-      home: document.getElementById("homePage"),
-      quest: document.getElementById("questPage"),
-      prediction: document.getElementById("predictionPage")
+
+      home:
+        document.getElementById(
+          "homePage"
+        ),
+
+      quest:
+        document.getElementById(
+          "questPage"
+        ),
+
+      prediction:
+        document.getElementById(
+          "predictionPage"
+        )
+
     };
 
 
     const navItems =
-      document.querySelectorAll(".nav-item");
+      document.querySelectorAll(
+        ".nav-item"
+      );
 
 
-    function showPage(pageName) {
+    function showPage(
+      pageName
+    ) {
 
-      Object.values(pages).forEach(page => {
-        page.classList.remove("active");
-      });
+      Object.values(pages)
+        .forEach(page => {
 
-      if (pages[pageName]) {
-        pages[pageName].classList.add("active");
-      }
+          page.classList.remove(
+            "active"
+          );
+
+        });
+
+
+      pages[pageName]
+        ?.classList.add(
+          "active"
+        );
 
 
       navItems.forEach(item => {
 
         item.classList.toggle(
           "active",
-          item.dataset.page === pageName
+          item.dataset.page ===
+            pageName
         );
 
       });
+
+
+      if (
+        pageName ===
+        "prediction"
+      ) {
+
+        resizeCanvas();
+
+        drawChart();
+
+      }
 
 
       window.scrollTo({
@@ -1260,27 +1419,50 @@
 
     navItems.forEach(item => {
 
-      item.addEventListener("click", () => {
+      item.addEventListener(
+        "click",
+        () => {
 
-        showPage(item.dataset.page);
+          showPage(
+            item.dataset.page
+          );
 
-      });
+        }
+      );
 
     });
 
 
     document
-      .getElementById("playPredictionCard")
-      .addEventListener("click", () => {
-        showPage("prediction");
-      });
+      .getElementById(
+        "playPredictionCard"
+      )
+      .addEventListener(
+        "click",
+        () => {
+
+          showPage(
+            "prediction"
+          );
+
+        }
+      );
 
 
     document
-      .getElementById("playQuestCard")
-      .addEventListener("click", () => {
-        showPage("quest");
-      });
+      .getElementById(
+        "playQuestCard"
+      )
+      .addEventListener(
+        "click",
+        () => {
+
+          showPage(
+            "quest"
+          );
+
+        }
+      );
 
 
     /* =====================================================
@@ -1323,71 +1505,614 @@
     let selectedStockIndex = 0;
 
     let selectedStock =
-      stocks[selectedStockIndex];
+      stocks[
+        selectedStockIndex
+      ];
 
+
+    /* =====================================================
+       MARKET STATE
+    ===================================================== */
 
     let bybitSocket = null;
 
     let heartbeatInterval = null;
 
+    let currentPriceValue = null;
+
+    let current24hChange = null;
+
+    let chartInterval = 1;
+
+    let rawTrades = [];
+
+    let chartData = [];
+
 
     /* =====================================================
-       PRICE UI
+       ELEMENTS
     ===================================================== */
 
     const marketSymbol =
-      document.getElementById("marketSymbol");
+      document.getElementById(
+        "marketSymbol"
+      );
 
     const marketName =
-      document.getElementById("marketName");
+      document.getElementById(
+        "marketName"
+      );
 
     const stockIcon =
-      document.getElementById("stockIcon");
+      document.getElementById(
+        "stockIcon"
+      );
 
     const currentPrice =
-      document.getElementById("currentPrice");
+      document.getElementById(
+        "currentPrice"
+      );
 
     const priceChange =
-      document.getElementById("priceChange");
+      document.getElementById(
+        "priceChange"
+      );
 
     const questionSymbol =
-      document.getElementById("questionSymbol");
+      document.getElementById(
+        "questionSymbol"
+      );
 
     const liveStatus =
-      document.getElementById("liveStatus");
+      document.getElementById(
+        "liveStatus"
+      );
 
+    const chartEmpty =
+      document.getElementById(
+        "chartEmpty"
+      );
+
+    const canvas =
+      document.getElementById(
+        "priceChart"
+      );
+
+    const ctx =
+      canvas.getContext(
+        "2d"
+      );
+
+
+    /* =====================================================
+       STOCK UI
+    ===================================================== */
 
     function updateStockUI() {
 
       selectedStock =
-        stocks[selectedStockIndex];
+        stocks[
+          selectedStockIndex
+        ];
+
 
       marketSymbol.textContent =
         selectedStock.symbol;
 
+
       marketName.textContent =
         selectedStock.name;
+
 
       stockIcon.textContent =
         selectedStock.icon;
 
+
       questionSymbol.textContent =
         selectedStock.symbol;
+
 
       currentPrice.textContent =
         "--";
 
+
       priceChange.textContent =
         "--";
 
+
       priceChange.className =
         "price-change neutral";
+
+
+      chartData = [];
+
+      rawTrades = [];
+
+      currentPriceValue = null;
+
+      current24hChange = null;
+
+
+      chartEmpty.style.display =
+        "flex";
+
+
+      resizeCanvas();
+
+      drawChart();
+
+    }
+
+
+    /* =====================================================
+       FORMAT PRICE
+    ===================================================== */
+
+    function formatPrice(
+      price
+    ) {
+
+      if (
+        !Number.isFinite(
+          price
+        )
+      ) {
+
+        return "--";
+
+      }
+
+
+      return (
+        "$" +
+        price.toLocaleString(
+          "en-US",
+          {
+            minimumFractionDigits: 2,
+            maximumFractionDigits: 4
+          }
+        )
+      );
+
+    }
+
+
+    /* =====================================================
+       UPDATE PRICE UI
+    ===================================================== */
+
+    function updatePriceUI(
+      price
+    ) {
+
+      currentPriceValue =
+        price;
+
+
+      currentPrice.textContent =
+        formatPrice(
+          price
+        );
+
+
+      if (
+        current24hChange !== null
+      ) {
+
+        update24hUI();
+
+      }
+
+    }
+
+
+    function update24hUI() {
+
+      const pct =
+        current24hChange;
+
+
+      if (
+        !Number.isFinite(
+          pct
+        )
+      ) {
+
+        return;
+
+      }
+
+
+      const sign =
+        pct > 0
+          ? "+"
+          : "";
+
+
+      priceChange.textContent =
+        sign +
+        pct.toFixed(2) +
+        "% · 24h";
+
+
+      if (pct > 0) {
+
+        priceChange.className =
+          "price-change positive";
+
+      } else if (pct < 0) {
+
+        priceChange.className =
+          "price-change negative";
+
+      } else {
+
+        priceChange.className =
+          "price-change neutral";
+
+      }
+
+    }
+
+
+    /* =====================================================
+       BYBIT REST
+       GET RECENT TRADES
+    ===================================================== */
+
+    async function loadHistoricalTrades() {
+
+      const url =
+        "https://api.bybit.com/v5/market/recent-trade" +
+        "?category=spot" +
+        "&symbol=" +
+        encodeURIComponent(
+          selectedStock.bybitSymbol
+        ) +
+        "&limit=1000";
+
+
+      try {
+
+        const response =
+          await fetch(
+            url
+          );
+
+
+        if (
+          !response.ok
+        ) {
+
+          throw new Error(
+            "HTTP " +
+            response.status
+          );
+
+        }
+
+
+        const result =
+          await response.json();
+
+
+        if (
+          result.retCode !== 0
+        ) {
+
+          throw new Error(
+            result.retMsg ||
+            "Bybit API error"
+          );
+
+        }
+
+
+        const list =
+          result.result?.list ||
+          [];
+
+
+        /*
+         * Bybit returns recent trades.
+         *
+         * We convert them into:
+         *
+         * {
+         *   time: timestamp,
+         *   price: trade price
+         * }
+         */
+
+        rawTrades =
+          list
+            .map(trade => {
+
+              return {
+
+                time:
+                  Number(
+                    trade.time
+                  ),
+
+                price:
+                  Number(
+                    trade.price
+                  )
+
+              };
+
+            })
+            .filter(trade => {
+
+              return (
+                Number.isFinite(
+                  trade.time
+                ) &&
+                Number.isFinite(
+                  trade.price
+                )
+              );
+
+            })
+            .sort(
+              (a, b) =>
+                a.time -
+                b.time
+            );
+
+
+        rebuildChart();
+
+
+      } catch (error) {
+
+        console.error(
+          "Historical trade error:",
+          error
+        );
+
+        /*
+         * We don't kill realtime
+         * data if historical data
+         * fails.
+         */
+
+        chartEmpty.textContent =
+          "Waiting for live trades...";
+
+      }
+
+    }
+
+
+    /* =====================================================
+       AGGREGATE TRADES
+    ===================================================== */
+
+    function aggregateTrades(
+      trades,
+      intervalSeconds
+    ) {
+
+      if (
+        !trades.length
+      ) {
+
+        return [];
+
+      }
+
+
+      const bucketSize =
+        intervalSeconds *
+        1000;
+
+
+      const buckets = {};
+
+
+      trades.forEach(
+        trade => {
+
+          const bucket =
+            Math.floor(
+              trade.time /
+              bucketSize
+            ) *
+            bucketSize;
+
+
+          if (
+            !buckets[bucket]
+          ) {
+
+            buckets[bucket] = {
+
+              time: bucket,
+
+              open:
+                trade.price,
+
+              high:
+                trade.price,
+
+              low:
+                trade.price,
+
+              close:
+                trade.price
+
+            };
+
+          } else {
+
+            const candle =
+              buckets[bucket];
+
+
+            candle.high =
+              Math.max(
+                candle.high,
+                trade.price
+              );
+
+
+            candle.low =
+              Math.min(
+                candle.low,
+                trade.price
+              );
+
+
+            candle.close =
+              trade.price;
+
+          }
+
+        }
+      );
+
+
+      return Object
+        .values(buckets)
+        .sort(
+          (a, b) =>
+            a.time -
+            b.time
+        );
+
+    }
+
+
+    /* =====================================================
+       REBUILD CHART
+    ===================================================== */
+
+    function rebuildChart() {
+
+      chartData =
+        aggregateTrades(
+          rawTrades,
+          chartInterval
+        );
+
+
+      /*
+       * Keep chart compact.
+       *
+       * 1S:
+       * show last 60 seconds
+       *
+       * 5S:
+       * show last 60 candles
+       */
+
+      if (
+        chartInterval === 1
+      ) {
+
+        chartData =
+          chartData.slice(
+            -60
+          );
+
+      } else {
+
+        chartData =
+          chartData.slice(
+            -60
+          );
+
+      }
+
+
+      if (
+        chartData.length
+      ) {
+
+        chartEmpty.style.display =
+          "none";
+
+      } else {
+
+        chartEmpty.style.display =
+          "flex";
+
+      }
+
+
+      resizeCanvas();
+
+      drawChart();
+
+    }
+
+
+    /* =====================================================
+       ADD REALTIME TRADE
+    ===================================================== */
+
+    function addRealtimeTrade(
+      timestamp,
+      price
+    ) {
+
+      if (
+        !Number.isFinite(
+          timestamp
+        ) ||
+        !Number.isFinite(
+          price
+        )
+      ) {
+
+        return;
+
+      }
+
+
+      /*
+       * Keep raw trades for
+       * rebuilding both 1s and 5s.
+       */
+
+      rawTrades.push({
+
+        time: timestamp,
+
+        price: price
+
+      });
+
+
+      /*
+       * Remove very old data.
+       *
+       * Keep ~3 minutes.
+       */
+
+      const cutoff =
+        Date.now() -
+        180000;
+
+
+      rawTrades =
+        rawTrades.filter(
+          trade =>
+            trade.time >=
+            cutoff
+        );
+
+
+      rebuildChart();
 
     }
 
 
     /* =====================================================
        BYBIT WEBSOCKET
+       PUBLIC TRADE STREAM
     ===================================================== */
 
     function connectBybit() {
@@ -1397,6 +2122,7 @@
 
       liveStatus.className =
         "live-status";
+
 
       liveStatus.innerHTML =
         '<span class="live-dot"></span> Connecting to Bybit';
@@ -1409,233 +2135,246 @@
       try {
 
         bybitSocket =
-          new WebSocket(wsUrl);
+          new WebSocket(
+            wsUrl
+          );
 
 
-        bybitSocket.onopen = () => {
+        bybitSocket.onopen =
+          () => {
 
-          liveStatus.className =
-            "live-status connected";
-
-          liveStatus.innerHTML =
-            '<span class="live-dot"></span> Live · Bybit';
+            liveStatus.className =
+              "live-status connected";
 
 
-          const subscribeMessage = {
+            liveStatus.innerHTML =
+              '<span class="live-dot"></span> Live · Bybit';
 
-            op: "subscribe",
 
-            args: [
-              "tickers." + selectedStock.bybitSymbol
-            ]
+            /*
+             * Subscribe to public
+             * trade stream.
+             */
+
+            bybitSocket.send(
+              JSON.stringify({
+
+                op: "subscribe",
+
+                args: [
+
+                  "publicTrade." +
+                  selectedStock.bybitSymbol
+
+                ]
+
+              })
+            );
+
+
+            /*
+             * Heartbeat every 20s.
+             */
+
+            heartbeatInterval =
+              setInterval(
+                () => {
+
+                  if (
+                    bybitSocket &&
+                    bybitSocket.readyState ===
+                      WebSocket.OPEN
+                  ) {
+
+                    bybitSocket.send(
+                      JSON.stringify({
+                        op: "ping"
+                      })
+                    );
+
+                  }
+
+                },
+                20000
+              );
 
           };
 
 
-          bybitSocket.send(
-            JSON.stringify(subscribeMessage)
-          );
+        bybitSocket.onmessage =
+          event => {
 
+            try {
 
-          /* heartbeat */
-
-          heartbeatInterval =
-            setInterval(() => {
-
-              if (
-                bybitSocket &&
-                bybitSocket.readyState === WebSocket.OPEN
-              ) {
-
-                bybitSocket.send(
-                  JSON.stringify({
-                    op: "ping"
-                  })
+              const message =
+                JSON.parse(
+                  event.data
                 );
 
-              }
 
-            }, 20000);
+              /*
+               * Ignore subscription
+               * confirmations etc.
+               */
 
-        };
+              if (
+                !message.topic
+              ) {
 
-
-        bybitSocket.onmessage = (event) => {
-
-          try {
-
-            const message =
-              JSON.parse(event.data);
-
-
-            /*
-             * We only care about ticker messages.
-             */
-
-            if (
-              !message.topic ||
-              !message.topic.startsWith("tickers.")
-            ) {
-              return;
-            }
-
-
-            if (!message.data) {
-              return;
-            }
-
-
-            /*
-             * Spot ticker returns an object.
-             */
-
-            const data =
-              Array.isArray(message.data)
-                ? message.data[0]
-                : message.data;
-
-
-            if (!data) {
-              return;
-            }
-
-
-            if (
-              data.symbol !==
-              selectedStock.bybitSymbol
-            ) {
-              return;
-            }
-
-
-            /*
-             * LAST PRICE
-             */
-
-            if (data.lastPrice) {
-
-              const price =
-                Number(data.lastPrice);
-
-
-              if (Number.isFinite(price)) {
-
-                currentPrice.textContent =
-                  "$" +
-                  price.toLocaleString(
-                    "en-US",
-                    {
-                      minimumFractionDigits: 2,
-                      maximumFractionDigits: 4
-                    }
-                  );
+                return;
 
               }
 
-            }
+
+              if (
+                !message.topic.startsWith(
+                  "publicTrade."
+                )
+              ) {
+
+                return;
+
+              }
 
 
-            /*
-             * 24H CHANGE
-             */
-
-            if (
-              data.price24hPcnt !== undefined &&
-              data.price24hPcnt !== null
-            ) {
-
-              const pct =
-                Number(data.price24hPcnt) * 100;
+              const trades =
+                message.data;
 
 
-              if (Number.isFinite(pct)) {
+              if (
+                !Array.isArray(
+                  trades
+                )
+              ) {
 
-                const sign =
-                  pct > 0
-                    ? "+"
-                    : "";
+                return;
 
-                priceChange.textContent =
-                  sign +
-                  pct.toFixed(2) +
-                  "% · 24h";
+              }
 
 
-                if (pct > 0) {
+              trades.forEach(
+                trade => {
 
-                  priceChange.className =
-                    "price-change positive";
+                  const symbol =
+                    trade.s;
 
-                } else if (pct < 0) {
 
-                  priceChange.className =
-                    "price-change negative";
+                  if (
+                    symbol !==
+                    selectedStock.bybitSymbol
+                  ) {
 
-                } else {
+                    return;
 
-                  priceChange.className =
-                    "price-change neutral";
+                  }
+
+
+                  const price =
+                    Number(
+                      trade.p
+                    );
+
+
+                  const timestamp =
+                    Number(
+                      trade.T
+                    );
+
+
+                  if (
+                    Number.isFinite(
+                      price
+                    )
+                  ) {
+
+                    updatePriceUI(
+                      price
+                    );
+
+                  }
+
+
+                  if (
+                    Number.isFinite(
+                      timestamp
+                    ) &&
+                    Number.isFinite(
+                      price
+                    )
+                  ) {
+
+                    addRealtimeTrade(
+                      timestamp,
+                      price
+                    );
+
+                  }
 
                 }
+              );
 
-              }
+
+            } catch (error) {
+
+              console.error(
+                "Trade message error:",
+                error
+              );
 
             }
 
-          } catch (error) {
+          };
+
+
+        bybitSocket.onerror =
+          error => {
 
             console.error(
-              "Bybit message parse error:",
+              "Bybit WebSocket error:",
               error
             );
 
-          }
 
-        };
-
-
-        bybitSocket.onerror = (error) => {
-
-          console.error(
-            "Bybit WebSocket error:",
-            error
-          );
+            liveStatus.className =
+              "live-status error";
 
 
-          liveStatus.className =
-            "live-status error";
+            liveStatus.innerHTML =
+              '<span class="live-dot"></span> Connection error';
 
-          liveStatus.innerHTML =
-            '<span class="live-dot"></span> Connection error';
-
-        };
+          };
 
 
-        bybitSocket.onclose = () => {
+        bybitSocket.onclose =
+          () => {
 
-          if (heartbeatInterval) {
-
-            clearInterval(
+            if (
               heartbeatInterval
-            );
+            ) {
 
-            heartbeatInterval = null;
+              clearInterval(
+                heartbeatInterval
+              );
 
-          }
 
-        };
+              heartbeatInterval =
+                null;
 
+            }
+
+          };
 
       } catch (error) {
 
         console.error(
-          "Could not connect to Bybit:",
+          "Bybit connection error:",
           error
         );
 
 
         liveStatus.className =
           "live-status error";
+
 
         liveStatus.innerHTML =
           '<span class="live-dot"></span> Connection error';
@@ -1646,31 +2385,45 @@
 
 
     /* =====================================================
-       DISCONNECT BYBIT
+       DISCONNECT
     ===================================================== */
 
     function disconnectBybit() {
 
-      if (heartbeatInterval) {
+      if (
+        heartbeatInterval
+      ) {
 
         clearInterval(
           heartbeatInterval
         );
 
-        heartbeatInterval = null;
+
+        heartbeatInterval =
+          null;
 
       }
 
 
-      if (bybitSocket) {
+      if (
+        bybitSocket
+      ) {
 
         try {
+
           bybitSocket.close();
+
         } catch (error) {
-          console.error(error);
+
+          console.error(
+            error
+          );
+
         }
 
-        bybitSocket = null;
+
+        bybitSocket =
+          null;
 
       }
 
@@ -1682,43 +2435,449 @@
     ===================================================== */
 
     document
-      .getElementById("marketSelector")
-      .addEventListener("click", () => {
+      .getElementById(
+        "marketSelector"
+      )
+      .addEventListener(
+        "click",
+        async () => {
 
-        selectedStockIndex++;
+          selectedStockIndex++;
 
-        if (
-          selectedStockIndex >= stocks.length
-        ) {
 
-          selectedStockIndex = 0;
+          if (
+            selectedStockIndex >=
+            stocks.length
+          ) {
+
+            selectedStockIndex =
+              0;
+
+          }
+
+
+          updateStockUI();
+
+
+          /*
+           * Load recent Bybit trades
+           * first, then connect realtime.
+           */
+
+          await loadHistoricalTrades();
+
+
+          connectBybit();
 
         }
+      );
 
 
-        updateStockUI();
+    /* =====================================================
+       INTERVAL TOGGLE
+    ===================================================== */
 
-        connectBybit();
+    const intervalButtons =
+      document.querySelectorAll(
+        ".interval-button"
+      );
 
-      });
+
+    intervalButtons.forEach(
+      button => {
+
+        button.addEventListener(
+          "click",
+          () => {
+
+            const interval =
+              Number(
+                button.dataset.interval
+              );
+
+
+            if (
+              interval !== 1 &&
+              interval !== 5
+            ) {
+
+              return;
+
+            }
+
+
+            chartInterval =
+              interval;
+
+
+            intervalButtons.forEach(
+              item => {
+
+                item.classList.toggle(
+                  "active",
+                  item === button
+                );
+
+              }
+            );
+
+
+            rebuildChart();
+
+          }
+        );
+
+      }
+    );
+
+
+    /* =====================================================
+       CANVAS RESIZE
+    ===================================================== */
+
+    function resizeCanvas() {
+
+      const rect =
+        canvas.getBoundingClientRect();
+
+
+      if (
+        rect.width <= 0 ||
+        rect.height <= 0
+      ) {
+
+        return;
+
+      }
+
+
+      const ratio =
+        window.devicePixelRatio ||
+        1;
+
+
+      canvas.width =
+        rect.width *
+        ratio;
+
+
+      canvas.height =
+        rect.height *
+        ratio;
+
+
+      ctx.setTransform(
+        ratio,
+        0,
+        0,
+        ratio,
+        0,
+        0
+      );
+
+    }
+
+
+    window.addEventListener(
+      "resize",
+      () => {
+
+        resizeCanvas();
+
+        drawChart();
+
+      }
+    );
+
+
+    /* =====================================================
+       DRAW CHART
+    ===================================================== */
+
+    function drawChart() {
+
+      const width =
+        canvas.clientWidth;
+
+
+      const height =
+        canvas.clientHeight;
+
+
+      if (
+        width <= 0 ||
+        height <= 0
+      ) {
+
+        return;
+
+      }
+
+
+      ctx.clearRect(
+        0,
+        0,
+        width,
+        height
+      );
+
+
+      if (
+        chartData.length < 2
+      ) {
+
+        return;
+
+      }
+
+
+      const prices =
+        chartData.map(
+          candle =>
+            candle.close
+        );
+
+
+      let min =
+        Math.min(
+          ...prices
+        );
+
+
+      let max =
+        Math.max(
+          ...prices
+        );
+
+
+      /*
+       * Give the chart some breathing
+       * room when price barely moves.
+       */
+
+      const range =
+        max - min;
+
+
+      if (
+        range === 0
+      ) {
+
+        min -=
+          Math.max(
+            Math.abs(min) *
+              0.0005,
+            0.01
+          );
+
+
+        max +=
+          Math.max(
+            Math.abs(max) *
+              0.0005,
+            0.01
+          );
+
+      } else {
+
+        const padding =
+          range *
+          0.12;
+
+
+        min -=
+          padding;
+
+
+        max +=
+          padding;
+
+      }
+
+
+      const paddingLeft =
+        4;
+
+      const paddingRight =
+        4;
+
+      const paddingTop =
+        8;
+
+      const paddingBottom =
+        8;
+
+
+      const usableWidth =
+        width -
+        paddingLeft -
+        paddingRight;
+
+
+      const usableHeight =
+        height -
+        paddingTop -
+        paddingBottom;
+
+
+      ctx.beginPath();
+
+
+      chartData.forEach(
+        (candle, index) => {
+
+          const x =
+            paddingLeft +
+            (
+              index /
+              (chartData.length - 1)
+            ) *
+            usableWidth;
+
+
+          const normalized =
+            (
+              candle.close -
+              min
+            ) /
+            (
+              max -
+              min
+            );
+
+
+          const y =
+            paddingTop +
+            (
+              1 -
+              normalized
+            ) *
+            usableHeight;
+
+
+          if (
+            index === 0
+          ) {
+
+            ctx.moveTo(
+              x,
+              y
+            );
+
+          } else {
+
+            ctx.lineTo(
+              x,
+              y
+            );
+
+          }
+
+        }
+      );
+
+
+      ctx.strokeStyle =
+        "#ffffff";
+
+
+      ctx.lineWidth =
+        2;
+
+
+      ctx.lineCap =
+        "round";
+
+
+      ctx.lineJoin =
+        "round";
+
+
+      ctx.stroke();
+
+
+      /*
+       * Draw current price dot.
+       */
+
+      const last =
+        chartData[
+          chartData.length - 1
+        ];
+
+
+      const lastNormalized =
+        (
+          last.close -
+          min
+        ) /
+        (
+          max -
+          min
+        );
+
+
+      const lastX =
+        width -
+        paddingRight;
+
+
+      const lastY =
+        paddingTop +
+        (
+          1 -
+          lastNormalized
+        ) *
+        usableHeight;
+
+
+      ctx.beginPath();
+
+
+      ctx.arc(
+        lastX,
+        lastY,
+        3.5,
+        0,
+        Math.PI * 2
+      );
+
+
+      ctx.fillStyle =
+        "#ffffff";
+
+
+      ctx.fill();
+
+    }
 
 
     /* =====================================================
        DIRECTION
     ===================================================== */
 
-    let direction = null;
+    let direction =
+      null;
+
 
     const upButton =
-      document.getElementById("upButton");
+      document.getElementById(
+        "upButton"
+      );
+
 
     const downButton =
-      document.getElementById("downButton");
+      document.getElementById(
+        "downButton"
+      );
 
 
-    function selectDirection(value) {
+    function selectDirection(
+      value
+    ) {
 
-      direction = value;
+      direction =
+        value;
 
 
       upButton.classList.toggle(
@@ -1740,13 +2899,25 @@
 
     upButton.addEventListener(
       "click",
-      () => selectDirection("up")
+      () => {
+
+        selectDirection(
+          "up"
+        );
+
+      }
     );
 
 
     downButton.addEventListener(
       "click",
-      () => selectDirection("down")
+      () => {
+
+        selectDirection(
+          "down"
+        );
+
+      }
     );
 
 
@@ -1754,35 +2925,52 @@
        STAKE
     ===================================================== */
 
-    let stake = 1000;
+    let stake =
+      1000;
+
 
     const stakeButtons =
-      document.querySelectorAll(".stake");
+      document.querySelectorAll(
+        ".stake"
+      );
 
 
-    stakeButtons.forEach(button => {
+    stakeButtons.forEach(
+      button => {
 
-      button.addEventListener("click", () => {
+        button.addEventListener(
+          "click",
+          () => {
 
-        stake =
-          Number(button.dataset.stake);
-
-
-        stakeButtons.forEach(item => {
-
-          item.classList.remove("selected");
-
-        });
+            stake =
+              Number(
+                button.dataset.stake
+              );
 
 
-        button.classList.add("selected");
+            stakeButtons.forEach(
+              item => {
+
+                item.classList.remove(
+                  "selected"
+                );
+
+              }
+            );
 
 
-        updatePredictButton();
+            button.classList.add(
+              "selected"
+            );
 
-      });
 
-    });
+            updatePredictButton();
+
+          }
+        );
+
+      }
+    );
 
 
     /* =====================================================
@@ -1790,24 +2978,32 @@
     ===================================================== */
 
     const predictButton =
-      document.getElementById("predictButton");
+      document.getElementById(
+        "predictButton"
+      );
 
 
     function updatePredictButton() {
 
-      if (!direction) {
+      if (
+        !direction
+      ) {
 
-        predictButton.disabled = true;
+        predictButton.disabled =
+          true;
+
 
         predictButton.textContent =
           "Select UP or DOWN";
+
 
         return;
 
       }
 
 
-      predictButton.disabled = false;
+      predictButton.disabled =
+        false;
 
 
       predictButton.textContent =
@@ -1824,8 +3020,12 @@
       "click",
       () => {
 
-        if (!direction) {
+        if (
+          !direction
+        ) {
+
           return;
+
         }
 
 
@@ -1838,7 +3038,9 @@
         );
 
 
-        predictButton.disabled = true;
+        predictButton.disabled =
+          true;
+
 
         predictButton.textContent =
           "Prediction placed ✓";
@@ -1852,62 +3054,112 @@
     ===================================================== */
 
     const toast =
-      document.getElementById("toast");
+      document.getElementById(
+        "toast"
+      );
 
 
     let toastTimeout;
 
 
-    function showToast(message) {
+    function showToast(
+      message
+    ) {
 
       toast.textContent =
         message;
 
-      toast.classList.add("show");
+
+      toast.classList.add(
+        "show"
+      );
 
 
-      clearTimeout(toastTimeout);
+      clearTimeout(
+        toastTimeout
+      );
 
 
       toastTimeout =
-        setTimeout(() => {
+        setTimeout(
+          () => {
 
-          toast.classList.remove("show");
+            toast.classList.remove(
+              "show"
+            );
 
-        }, 2200);
+          },
+          2200
+        );
 
     }
 
 
     /* =====================================================
-       COUNTDOWN
+       30 SECOND ROUND
     ===================================================== */
 
-    let seconds = 299;
+    let seconds =
+      30;
 
 
     const countdown =
-      document.getElementById("countdown");
+      document.getElementById(
+        "countdown"
+      );
 
 
     function updateCountdown() {
 
-      const minutes =
-        Math.floor(seconds / 60);
+      const mins =
+        Math.floor(
+          seconds / 60
+        );
+
 
       const secs =
         seconds % 60;
 
 
       countdown.textContent =
-        String(minutes).padStart(2, "0") +
+        String(mins)
+          .padStart(2, "0") +
         ":" +
-        String(secs).padStart(2, "0");
+        String(secs)
+          .padStart(2, "0");
 
 
-      if (seconds <= 0) {
+      if (
+        seconds <= 0
+      ) {
 
-        seconds = 299;
+        seconds =
+          30;
+
+
+        /*
+         * For now this only
+         * resets the timer.
+         *
+         * Settlement will be
+         * implemented later.
+         */
+
+        direction =
+          null;
+
+
+        upButton.classList.remove(
+          "selected"
+        );
+
+
+        downButton.classList.remove(
+          "selected"
+        );
+
+
+        updatePredictButton();
 
       } else {
 
@@ -1928,12 +3180,31 @@
 
 
     /* =====================================================
-       INITIALIZE
+       INITIAL LOAD
     ===================================================== */
 
-    updateStockUI();
+    async function initializeMarket() {
 
-    connectBybit();
+      updateStockUI();
+
+
+      /*
+       * Historical data first.
+       */
+
+      await loadHistoricalTrades();
+
+
+      /*
+       * Then realtime trades.
+       */
+
+      connectBybit();
+
+    }
+
+
+    initializeMarket();
 
 
     /* =====================================================
@@ -1943,7 +3214,9 @@
     window.addEventListener(
       "beforeunload",
       () => {
+
         disconnectBybit();
+
       }
     );
 
