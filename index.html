@@ -91,7 +91,6 @@
     .brand-title {
       font-size: 16px;
       font-weight: 800;
-      letter-spacing: -0.2px;
     }
 
     .brand-subtitle {
@@ -432,7 +431,7 @@
     }
 
     /* =========================
-       CHART
+       CHART HEADER
     ========================= */
 
     .chart-header {
@@ -476,9 +475,13 @@
       color: #111111;
     }
 
+    /* =========================
+       CANDLESTICK CHART
+    ========================= */
+
     .chart {
       width: 100%;
-      height: 130px;
+      height: 170px;
       position: relative;
       overflow: hidden;
       border-radius: 12px;
@@ -488,7 +491,7 @@
           rgba(255,255,255,0.04) 1px,
           transparent 1px
         );
-      background-size: 100% 32px;
+      background-size: 100% 34px;
     }
 
     #priceChart {
@@ -1058,7 +1061,7 @@
         </div>
 
 
-        <!-- CHART -->
+        <!-- CANDLE CHART -->
 
         <div class="chart">
 
@@ -1255,7 +1258,9 @@
   </nav>
 
 
-  <!-- TOAST -->
+  <!-- =========================
+       TOAST
+  ========================= -->
 
   <div
     class="toast"
@@ -1402,9 +1407,13 @@
         "prediction"
       ) {
 
-        resizeCanvas();
+        setTimeout(() => {
 
-        drawChart();
+          resizeCanvas();
+
+          drawChart();
+
+        }, 20);
 
       }
 
@@ -1518,6 +1527,8 @@
 
     let heartbeatInterval = null;
 
+    let reconnectTimer = null;
+
     let currentPriceValue = null;
 
     let current24hChange = null;
@@ -1527,6 +1538,8 @@
     let rawTrades = [];
 
     let chartData = [];
+
+    let socketGeneration = 0;
 
 
     /* =====================================================
@@ -1585,6 +1598,39 @@
 
 
     /* =====================================================
+       FORMAT PRICE
+    ===================================================== */
+
+    function formatPrice(
+      price
+    ) {
+
+      if (
+        !Number.isFinite(
+          price
+        )
+      ) {
+
+        return "--";
+
+      }
+
+
+      return (
+        "$" +
+        price.toLocaleString(
+          "en-US",
+          {
+            minimumFractionDigits: 2,
+            maximumFractionDigits: 4
+          }
+        )
+      );
+
+    }
+
+
+    /* =====================================================
        STOCK UI
     ===================================================== */
 
@@ -1633,6 +1679,10 @@
       current24hChange = null;
 
 
+      chartEmpty.textContent =
+        "Loading market data...";
+
+
       chartEmpty.style.display =
         "flex";
 
@@ -1645,138 +1695,33 @@
 
 
     /* =====================================================
-       FORMAT PRICE
+       LOAD CURRENT PRICE
+       BYBIT REST TICKER
     ===================================================== */
 
-    function formatPrice(
-      price
-    ) {
+    async function loadCurrentTicker() {
 
-      if (
-        !Number.isFinite(
-          price
-        )
-      ) {
+      const symbol =
+        selectedStock.bybitSymbol;
 
-        return "--";
-
-      }
-
-
-      return (
-        "$" +
-        price.toLocaleString(
-          "en-US",
-          {
-            minimumFractionDigits: 2,
-            maximumFractionDigits: 4
-          }
-        )
-      );
-
-    }
-
-
-    /* =====================================================
-       UPDATE PRICE UI
-    ===================================================== */
-
-    function updatePriceUI(
-      price
-    ) {
-
-      currentPriceValue =
-        price;
-
-
-      currentPrice.textContent =
-        formatPrice(
-          price
-        );
-
-
-      if (
-        current24hChange !== null
-      ) {
-
-        update24hUI();
-
-      }
-
-    }
-
-
-    function update24hUI() {
-
-      const pct =
-        current24hChange;
-
-
-      if (
-        !Number.isFinite(
-          pct
-        )
-      ) {
-
-        return;
-
-      }
-
-
-      const sign =
-        pct > 0
-          ? "+"
-          : "";
-
-
-      priceChange.textContent =
-        sign +
-        pct.toFixed(2) +
-        "% · 24h";
-
-
-      if (pct > 0) {
-
-        priceChange.className =
-          "price-change positive";
-
-      } else if (pct < 0) {
-
-        priceChange.className =
-          "price-change negative";
-
-      } else {
-
-        priceChange.className =
-          "price-change neutral";
-
-      }
-
-    }
-
-
-    /* =====================================================
-       BYBIT REST
-       GET RECENT TRADES
-    ===================================================== */
-
-    async function loadHistoricalTrades() {
 
       const url =
-        "https://api.bybit.com/v5/market/recent-trade" +
+        "https://api.bybit.com/v5/market/tickers" +
         "?category=spot" +
         "&symbol=" +
         encodeURIComponent(
-          selectedStock.bybitSymbol
-        ) +
-        "&limit=1000";
+          symbol
+        );
 
 
       try {
 
         const response =
           await fetch(
-            url
+            url,
+            {
+              cache: "no-store"
+            }
           );
 
 
@@ -1802,8 +1747,221 @@
 
           throw new Error(
             result.retMsg ||
-            "Bybit API error"
+            "Bybit ticker error"
           );
+
+        }
+
+
+        const ticker =
+          result.result?.list?.[0];
+
+
+        if (!ticker) {
+
+          throw new Error(
+            "No ticker data"
+          );
+
+        }
+
+
+        const price =
+          Number(
+            ticker.lastPrice
+          );
+
+
+        const pct =
+          Number(
+            ticker.price24hPcnt
+          ) * 100;
+
+
+        if (
+          Number.isFinite(
+            price
+          )
+        ) {
+
+          updatePriceUI(
+            price
+          );
+
+        }
+
+
+        if (
+          Number.isFinite(
+            pct
+          )
+        ) {
+
+          current24hChange =
+            pct;
+
+          update24hUI();
+
+        }
+
+      } catch (error) {
+
+        console.error(
+          "Ticker REST error:",
+          error
+        );
+
+      }
+
+    }
+
+
+    /* =====================================================
+       UPDATE PRICE UI
+    ===================================================== */
+
+    function updatePriceUI(
+      price
+    ) {
+
+      currentPriceValue =
+        price;
+
+
+      currentPrice.textContent =
+        formatPrice(
+          price
+        );
+
+    }
+
+
+    function update24hUI() {
+
+      if (
+        !Number.isFinite(
+          current24hChange
+        )
+      ) {
+
+        return;
+
+      }
+
+
+      const pct =
+        current24hChange;
+
+
+      const sign =
+        pct > 0
+          ? "+"
+          : "";
+
+
+      priceChange.textContent =
+        sign +
+        pct.toFixed(2) +
+        "% · 24h";
+
+
+      if (
+        pct > 0
+      ) {
+
+        priceChange.className =
+          "price-change positive";
+
+      } else if (
+        pct < 0
+      ) {
+
+        priceChange.className =
+          "price-change negative";
+
+      } else {
+
+        priceChange.className =
+          "price-change neutral";
+
+      }
+
+    }
+
+
+    /* =====================================================
+       HISTORICAL TRADES
+       BYBIT REST
+    ===================================================== */
+
+    async function loadHistoricalTrades(
+      generation
+    ) {
+
+      const symbol =
+        selectedStock.bybitSymbol;
+
+
+      const url =
+        "https://api.bybit.com/v5/market/recent-trade" +
+        "?category=spot" +
+        "&symbol=" +
+        encodeURIComponent(
+          symbol
+        ) +
+        "&limit=60";
+
+
+      try {
+
+        const response =
+          await fetch(
+            url,
+            {
+              cache: "no-store"
+            }
+          );
+
+
+        if (
+          !response.ok
+        ) {
+
+          throw new Error(
+            "HTTP " +
+            response.status
+          );
+
+        }
+
+
+        const result =
+          await response.json();
+
+
+        if (
+          result.retCode !== 0
+        ) {
+
+          throw new Error(
+            result.retMsg ||
+            "Bybit recent trade error"
+          );
+
+        }
+
+
+        /*
+         * Don't let an old request
+         * overwrite a newly selected stock.
+         */
+
+        if (
+          generation !==
+          socketGeneration
+        ) {
+
+          return;
 
         }
 
@@ -1812,17 +1970,6 @@
           result.result?.list ||
           [];
 
-
-        /*
-         * Bybit returns recent trades.
-         *
-         * We convert them into:
-         *
-         * {
-         *   time: timestamp,
-         *   price: trade price
-         * }
-         */
 
         rawTrades =
           list
@@ -1868,15 +2015,10 @@
       } catch (error) {
 
         console.error(
-          "Historical trade error:",
+          "Historical trades error:",
           error
         );
 
-        /*
-         * We don't kill realtime
-         * data if historical data
-         * fails.
-         */
 
         chartEmpty.textContent =
           "Waiting for live trades...";
@@ -1909,13 +2051,13 @@
         1000;
 
 
-      const buckets = {};
+      const buckets = new Map();
 
 
       trades.forEach(
         trade => {
 
-          const bucket =
+          const bucketTime =
             Math.floor(
               trade.time /
               bucketSize
@@ -1924,31 +2066,39 @@
 
 
           if (
-            !buckets[bucket]
+            !buckets.has(
+              bucketTime
+            )
           ) {
 
-            buckets[bucket] = {
+            buckets.set(
+              bucketTime,
+              {
 
-              time: bucket,
+                time:
+                  bucketTime,
 
-              open:
-                trade.price,
+                open:
+                  trade.price,
 
-              high:
-                trade.price,
+                high:
+                  trade.price,
 
-              low:
-                trade.price,
+                low:
+                  trade.price,
 
-              close:
-                trade.price
+                close:
+                  trade.price
 
-            };
+              }
+            );
 
           } else {
 
             const candle =
-              buckets[bucket];
+              buckets.get(
+                bucketTime
+              );
 
 
             candle.high =
@@ -1974,8 +2124,10 @@
       );
 
 
-      return Object
-        .values(buckets)
+      return Array
+        .from(
+          buckets.values()
+        )
         .sort(
           (a, b) =>
             a.time -
@@ -1999,36 +2151,17 @@
 
 
       /*
-       * Keep chart compact.
-       *
-       * 1S:
-       * show last 60 seconds
-       *
-       * 5S:
-       * show last 60 candles
+       * Show the latest candles only.
        */
 
-      if (
-        chartInterval === 1
-      ) {
-
-        chartData =
-          chartData.slice(
-            -60
-          );
-
-      } else {
-
-        chartData =
-          chartData.slice(
-            -60
-          );
-
-      }
+      chartData =
+        chartData.slice(
+          -60
+        );
 
 
       if (
-        chartData.length
+        chartData.length >= 1
       ) {
 
         chartEmpty.style.display =
@@ -2072,24 +2205,20 @@
       }
 
 
-      /*
-       * Keep raw trades for
-       * rebuilding both 1s and 5s.
-       */
-
       rawTrades.push({
 
-        time: timestamp,
+        time:
+          timestamp,
 
-        price: price
+        price:
+          price
 
       });
 
 
       /*
-       * Remove very old data.
-       *
-       * Keep ~3 minutes.
+       * Keep around 3 minutes of
+       * raw trade data.
        */
 
       const cutoff =
@@ -2111,13 +2240,17 @@
 
 
     /* =====================================================
-       BYBIT WEBSOCKET
-       PUBLIC TRADE STREAM
+       CONNECT BYBIT
+       TICKER + TRADE
     ===================================================== */
 
     function connectBybit() {
 
       disconnectBybit();
+
+
+      const generation =
+        ++socketGeneration;
 
 
       liveStatus.className =
@@ -2143,6 +2276,25 @@
         bybitSocket.onopen =
           () => {
 
+            /*
+             * If this socket became stale
+             * before opening, close it.
+             */
+
+            if (
+              generation !==
+              socketGeneration
+            ) {
+
+              try {
+                bybitSocket.close();
+              } catch (e) {}
+
+              return;
+
+            }
+
+
             liveStatus.className =
               "live-status connected";
 
@@ -2152,8 +2304,10 @@
 
 
             /*
-             * Subscribe to public
-             * trade stream.
+             * Subscribe to BOTH:
+             *
+             * tickers
+             * public trades
              */
 
             bybitSocket.send(
@@ -2163,6 +2317,9 @@
 
                 args: [
 
+                  "tickers." +
+                  selectedStock.bybitSymbol,
+
                   "publicTrade." +
                   selectedStock.bybitSymbol
 
@@ -2171,10 +2328,6 @@
               })
             );
 
-
-            /*
-             * Heartbeat every 20s.
-             */
 
             heartbeatInterval =
               setInterval(
@@ -2213,111 +2366,171 @@
 
 
               /*
-               * Ignore subscription
-               * confirmations etc.
+               * TICKER
                */
 
               if (
-                !message.topic
+                message.topic ===
+                "tickers." +
+                selectedStock.bybitSymbol
               ) {
 
-                return;
-
-              }
-
-
-              if (
-                !message.topic.startsWith(
-                  "publicTrade."
-                )
-              ) {
-
-                return;
-
-              }
+                const data =
+                  Array.isArray(
+                    message.data
+                  )
+                    ? message.data[0]
+                    : message.data;
 
 
-              const trades =
-                message.data;
+                if (!data) {
+                  return;
+                }
 
 
-              if (
-                !Array.isArray(
-                  trades
-                )
-              ) {
-
-                return;
-
-              }
+                const price =
+                  Number(
+                    data.lastPrice
+                  );
 
 
-              trades.forEach(
-                trade => {
+                if (
+                  Number.isFinite(
+                    price
+                  )
+                ) {
 
-                  const symbol =
-                    trade.s;
+                  updatePriceUI(
+                    price
+                  );
 
-
-                  if (
-                    symbol !==
-                    selectedStock.bybitSymbol
-                  ) {
-
-                    return;
-
-                  }
+                }
 
 
-                  const price =
+                if (
+                  data.price24hPcnt !==
+                  undefined &&
+                  data.price24hPcnt !==
+                  null
+                ) {
+
+                  const pct =
                     Number(
-                      trade.p
-                    );
-
-
-                  const timestamp =
-                    Number(
-                      trade.T
-                    );
+                      data.price24hPcnt
+                    ) * 100;
 
 
                   if (
                     Number.isFinite(
-                      price
+                      pct
                     )
                   ) {
 
-                    updatePriceUI(
-                      price
-                    );
+                    current24hChange =
+                      pct;
 
-                  }
-
-
-                  if (
-                    Number.isFinite(
-                      timestamp
-                    ) &&
-                    Number.isFinite(
-                      price
-                    )
-                  ) {
-
-                    addRealtimeTrade(
-                      timestamp,
-                      price
-                    );
+                    update24hUI();
 
                   }
 
                 }
-              );
 
+
+                return;
+
+              }
+
+
+              /*
+               * PUBLIC TRADE
+               */
+
+              if (
+                message.topic ===
+                "publicTrade." +
+                selectedStock.bybitSymbol
+              ) {
+
+                if (
+                  !Array.isArray(
+                    message.data
+                  )
+                ) {
+
+                  return;
+
+                }
+
+
+                message.data.forEach(
+                  trade => {
+
+                    if (
+                      trade.s !==
+                      selectedStock.bybitSymbol
+                    ) {
+
+                      return;
+
+                    }
+
+
+                    const price =
+                      Number(
+                        trade.p
+                      );
+
+
+                    const timestamp =
+                      Number(
+                        trade.T
+                      );
+
+
+                    if (
+                      Number.isFinite(
+                        price
+                      )
+                    ) {
+
+                      /*
+                       * This also makes
+                       * current price react
+                       * immediately to trades.
+                       */
+
+                      updatePriceUI(
+                        price
+                      );
+
+                    }
+
+
+                    if (
+                      Number.isFinite(
+                        price
+                      ) &&
+                      Number.isFinite(
+                        timestamp
+                      )
+                    ) {
+
+                      addRealtimeTrade(
+                        timestamp,
+                        price
+                      );
+
+                    }
+
+                  }
+                );
+
+              }
 
             } catch (error) {
 
               console.error(
-                "Trade message error:",
+                "Bybit message error:",
                 error
               );
 
@@ -2356,9 +2569,51 @@
                 heartbeatInterval
               );
 
-
               heartbeatInterval =
                 null;
+
+            }
+
+
+            /*
+             * Reconnect only if this
+             * is still the active socket.
+             */
+
+            if (
+              generation ===
+              socketGeneration
+            ) {
+
+              liveStatus.className =
+                "live-status";
+
+
+              liveStatus.innerHTML =
+                '<span class="live-dot"></span> Reconnecting...';
+
+
+              clearTimeout(
+                reconnectTimer
+              );
+
+
+              reconnectTimer =
+                setTimeout(
+                  () => {
+
+                    if (
+                      generation ===
+                      socketGeneration
+                    ) {
+
+                      connectBybit();
+
+                    }
+
+                  },
+                  2000
+                );
 
             }
 
@@ -2390,6 +2645,11 @@
 
     function disconnectBybit() {
 
+      clearTimeout(
+        reconnectTimer
+      );
+
+
       if (
         heartbeatInterval
       ) {
@@ -2397,7 +2657,6 @@
         clearInterval(
           heartbeatInterval
         );
-
 
         heartbeatInterval =
           null;
@@ -2460,12 +2719,36 @@
 
 
           /*
-           * Load recent Bybit trades
-           * first, then connect realtime.
+           * Increment generation so
+           * old async requests cannot
+           * overwrite the new market.
            */
 
-          await loadHistoricalTrades();
+          const generation =
+            ++socketGeneration;
 
+
+          /*
+           * IMPORTANT:
+           *
+           * Load current ticker and
+           * historical chart in parallel.
+           *
+           * We do NOT wait for chart
+           * before showing current price.
+           */
+
+          loadCurrentTicker();
+
+          loadHistoricalTrades(
+            generation
+          );
+
+
+          /*
+           * Realtime connection starts
+           * immediately.
+           */
 
           connectBybit();
 
@@ -2557,13 +2840,27 @@
 
 
       canvas.width =
-        rect.width *
-        ratio;
+        Math.floor(
+          rect.width *
+          ratio
+        );
 
 
       canvas.height =
-        rect.height *
-        ratio;
+        Math.floor(
+          rect.height *
+          ratio
+        );
+
+
+      canvas.style.width =
+        rect.width +
+        "px";
+
+
+      canvas.style.height =
+        rect.height +
+        "px";
 
 
       ctx.setTransform(
@@ -2578,20 +2875,8 @@
     }
 
 
-    window.addEventListener(
-      "resize",
-      () => {
-
-        resizeCanvas();
-
-        drawChart();
-
-      }
-    );
-
-
     /* =====================================================
-       DRAW CHART
+       DRAW CANDLESTICK CHART
     ===================================================== */
 
     function drawChart() {
@@ -2623,7 +2908,7 @@
 
 
       if (
-        chartData.length < 2
+        chartData.length === 0
       ) {
 
         return;
@@ -2631,52 +2916,68 @@
       }
 
 
-      const prices =
-        chartData.map(
-          candle =>
+      /*
+       * Use all OHLC prices to
+       * determine chart range.
+       */
+
+      const values = [];
+
+
+      chartData.forEach(
+        candle => {
+
+          values.push(
+            candle.open,
+            candle.high,
+            candle.low,
             candle.close
-        );
+          );
+
+        }
+      );
 
 
       let min =
         Math.min(
-          ...prices
+          ...values
         );
 
 
       let max =
         Math.max(
-          ...prices
+          ...values
         );
 
 
+      let range =
+        max -
+        min;
+
+
       /*
-       * Give the chart some breathing
-       * room when price barely moves.
+       * If market barely moved,
+       * create a visible range.
        */
 
-      const range =
-        max - min;
-
-
       if (
-        range === 0
+        range <= 0
       ) {
 
-        min -=
-          Math.max(
-            Math.abs(min) *
-              0.0005,
-            0.01
-          );
-
-
-        max +=
+        const padding =
           Math.max(
             Math.abs(max) *
               0.0005,
             0.01
           );
+
+
+        min -=
+          padding;
+
+
+        max +=
+          padding;
 
       } else {
 
@@ -2695,11 +2996,16 @@
       }
 
 
+      range =
+        max -
+        min;
+
+
       const paddingLeft =
-        4;
+        5;
 
       const paddingRight =
-        4;
+        5;
 
       const paddingTop =
         8;
@@ -2720,7 +3026,45 @@
         paddingBottom;
 
 
-      ctx.beginPath();
+      function priceToY(
+        price
+      ) {
+
+        return (
+          paddingTop +
+          (
+            1 -
+            (
+              (
+                price -
+                min
+              ) /
+              range
+            )
+          ) *
+          usableHeight
+        );
+
+      }
+
+
+      /*
+       * Candle width.
+       */
+
+      const spacing =
+        usableWidth /
+        chartData.length;
+
+
+      const candleWidth =
+        Math.max(
+          3,
+          Math.min(
+            10,
+            spacing * 0.58
+          )
+        );
 
 
       chartData.forEach(
@@ -2728,128 +3072,189 @@
 
           const x =
             paddingLeft +
-            (
-              index /
-              (chartData.length - 1)
-            ) *
-            usableWidth;
+            spacing *
+              index +
+            spacing / 2;
 
 
-          const normalized =
-            (
-              candle.close -
-              min
-            ) /
-            (
-              max -
-              min
+          const openY =
+            priceToY(
+              candle.open
             );
 
 
-          const y =
-            paddingTop +
-            (
-              1 -
-              normalized
-            ) *
-            usableHeight;
+          const closeY =
+            priceToY(
+              candle.close
+            );
 
+
+          const highY =
+            priceToY(
+              candle.high
+            );
+
+
+          const lowY =
+            priceToY(
+              candle.low
+            );
+
+
+          const isUp =
+            candle.close >=
+            candle.open;
+
+
+          /*
+           * Green / red candle.
+           */
+
+          const candleColor =
+            isUp
+              ? "#4ade80"
+              : "#f87171";
+
+
+          /*
+           * Wick
+           */
+
+          ctx.beginPath();
+
+          ctx.moveTo(
+            x,
+            highY
+          );
+
+          ctx.lineTo(
+            x,
+            lowY
+          );
+
+          ctx.strokeStyle =
+            candleColor;
+
+          ctx.lineWidth =
+            1;
+
+          ctx.stroke();
+
+
+          /*
+           * Body
+           */
+
+          const bodyTop =
+            Math.min(
+              openY,
+              closeY
+            );
+
+
+          const bodyBottom =
+            Math.max(
+              openY,
+              closeY
+            );
+
+
+          let bodyHeight =
+            bodyBottom -
+            bodyTop;
+
+
+          /*
+           * Do not make a flat
+           * candle invisible.
+           */
 
           if (
-            index === 0
+            bodyHeight < 1
           ) {
 
-            ctx.moveTo(
-              x,
-              y
-            );
-
-          } else {
-
-            ctx.lineTo(
-              x,
-              y
-            );
+            bodyHeight =
+              1.5;
 
           }
+
+
+          ctx.fillStyle =
+            candleColor;
+
+
+          ctx.fillRect(
+            x -
+              candleWidth /
+                2,
+            bodyTop,
+            candleWidth,
+            bodyHeight
+          );
 
         }
       );
 
 
-      ctx.strokeStyle =
-        "#ffffff";
-
-
-      ctx.lineWidth =
-        2;
-
-
-      ctx.lineCap =
-        "round";
-
-
-      ctx.lineJoin =
-        "round";
-
-
-      ctx.stroke();
-
-
       /*
-       * Draw current price dot.
+       * Current price line/dot.
        */
 
-      const last =
+      const latest =
         chartData[
           chartData.length - 1
         ];
 
 
-      const lastNormalized =
-        (
-          last.close -
-          min
-        ) /
-        (
-          max -
-          min
+      if (
+        latest
+      ) {
+
+        const lastPrice =
+          latest.close;
+
+
+        const y =
+          priceToY(
+            lastPrice
+          );
+
+
+        ctx.beginPath();
+
+
+        ctx.arc(
+          width -
+            paddingRight -
+            2,
+          y,
+          3,
+          0,
+          Math.PI * 2
         );
 
 
-      const lastX =
-        width -
-        paddingRight;
+        ctx.fillStyle =
+          "#ffffff";
 
 
-      const lastY =
-        paddingTop +
-        (
-          1 -
-          lastNormalized
-        ) *
-        usableHeight;
+        ctx.fill();
 
-
-      ctx.beginPath();
-
-
-      ctx.arc(
-        lastX,
-        lastY,
-        3.5,
-        0,
-        Math.PI * 2
-      );
-
-
-      ctx.fillStyle =
-        "#ffffff";
-
-
-      ctx.fill();
+      }
 
     }
+
+
+    window.addEventListener(
+      "resize",
+      () => {
+
+        resizeCanvas();
+
+        drawChart();
+
+      }
+    );
 
 
     /* =====================================================
@@ -3138,11 +3543,9 @@
 
 
         /*
-         * For now this only
-         * resets the timer.
+         * Settlement is NOT implemented yet.
          *
-         * Settlement will be
-         * implemented later.
+         * For now only reset UI.
          */
 
         direction =
@@ -3180,7 +3583,7 @@
 
 
     /* =====================================================
-       INITIAL LOAD
+       INITIALIZE
     ===================================================== */
 
     async function initializeMarket() {
@@ -3189,14 +3592,26 @@
 
 
       /*
-       * Historical data first.
+       * IMPORTANT:
+       *
+       * Current ticker and historical
+       * chart load at the same time.
        */
 
-      await loadHistoricalTrades();
+      loadCurrentTicker();
+
+
+      const generation =
+        ++socketGeneration;
+
+
+      loadHistoricalTrades(
+        generation
+      );
 
 
       /*
-       * Then realtime trades.
+       * Start realtime immediately.
        */
 
       connectBybit();
