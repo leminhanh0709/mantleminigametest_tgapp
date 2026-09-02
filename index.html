@@ -736,6 +736,141 @@
     }
 
     /* =====================================================
+       BALANCE HISTORY
+    ===================================================== */
+
+    .history-summary {
+      padding: 20px;
+      margin-bottom: 16px;
+    }
+
+    .history-balance-label {
+      color: #858585;
+      font-size: 13px;
+      margin-bottom: 7px;
+    }
+
+    .history-balance {
+      font-size: 32px;
+      font-weight: 850;
+      letter-spacing: -0.04em;
+    }
+
+    .history-balance-unit {
+      font-size: 13px;
+      color: #777777;
+      margin-left: 5px;
+      font-weight: 600;
+    }
+
+    .history-list {
+      display: flex;
+      flex-direction: column;
+      gap: 8px;
+    }
+
+    .history-day {
+      color: #666666;
+      font-size: 11px;
+      font-weight: 800;
+      text-transform: uppercase;
+      letter-spacing: 0.08em;
+      margin: 16px 2px 7px;
+    }
+
+    .history-item {
+      padding: 14px 15px;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 12px;
+    }
+
+    .history-left {
+      min-width: 0;
+      flex: 1;
+    }
+
+    .history-top {
+      display: flex;
+      align-items: center;
+      gap: 7px;
+      margin-bottom: 4px;
+    }
+
+    .history-icon {
+      font-size: 15px;
+      line-height: 1;
+    }
+
+    .history-activity {
+      font-size: 13px;
+      font-weight: 800;
+    }
+
+    .history-detail {
+      color: #707070;
+      font-size: 11px;
+      white-space: nowrap;
+      overflow: hidden;
+      text-overflow: ellipsis;
+    }
+
+    .history-right {
+      text-align: right;
+      flex: 0 0 auto;
+    }
+
+    .history-amount {
+      font-size: 14px;
+      font-weight: 850;
+      margin-bottom: 3px;
+    }
+
+    .history-amount.positive {
+      color: #48d597;
+    }
+
+    .history-amount.negative {
+      color: #ff5d65;
+    }
+
+    .history-time {
+      color: #555555;
+      font-size: 10px;
+    }
+
+    .history-after {
+      color: #666666;
+      font-size: 10px;
+      margin-top: 2px;
+    }
+
+    .history-empty {
+      padding: 42px 20px;
+      text-align: center;
+    }
+
+    .history-empty-icon {
+      font-size: 38px;
+      margin-bottom: 12px;
+    }
+
+    .history-empty-title {
+      font-size: 18px;
+      font-weight: 800;
+      margin-bottom: 6px;
+    }
+
+    .history-empty-text {
+      color: #707070;
+      font-size: 12px;
+      line-height: 1.5;
+    }
+
+
+
+    /* =====================================================
        NAV
     ===================================================== */
 
@@ -752,7 +887,7 @@
       background: rgba(16, 16, 16, 0.96);
       border: 1px solid #242424;
       display: grid;
-      grid-template-columns: repeat(3, 1fr);
+      grid-template-columns: repeat(4, 1fr);
       padding: 6px;
       backdrop-filter: blur(15px);
     }
@@ -1346,6 +1481,54 @@
 
     </section>
 
+
+    <!-- ===================================================
+         BALANCE HISTORY
+    ==================================================== -->
+
+    <section
+      id="historyPage"
+      style="display:none;"
+    >
+
+      <div class="prediction-header">
+        <div class="prediction-title">
+          Balance History
+        </div>
+
+        <div class="prediction-subtitle">
+          Track every Virtual Credit movement.
+        </div>
+      </div>
+
+      <div class="card history-summary">
+
+        <div class="history-balance-label">
+          Current Balance
+        </div>
+
+        <div>
+          <span
+            class="history-balance"
+            id="historyBalance"
+          >
+            10,000
+          </span>
+
+          <span class="history-balance-unit">
+            CREDITS
+          </span>
+        </div>
+
+      </div>
+
+      <div
+        id="historyList"
+        class="history-list"
+      ></div>
+
+    </section>
+
   </div>
 
 
@@ -1377,6 +1560,18 @@
 
       Daily Quest
     </button>
+
+    <button
+      class="nav-btn"
+      id="navHistory"
+    >
+      <span class="nav-icon">
+        📜
+      </span>
+      History
+    </button>
+
+
 
 
     <button
@@ -1567,7 +1762,17 @@
   let balance = 10000;
 
 
-  let selectedSymbol =
+  
+   const BALANCE_STORAGE_KEY =
+     "mantleArenaBalance";
+
+   const HISTORY_STORAGE_KEY =
+     "mantleArenaBalanceHistory";
+
+   let balanceHistory = [];
+   let currentPage = "home";
+   let pendingResult = null;
+let selectedSymbol =
     "NVDAXUSDT";
 
 
@@ -1656,7 +1861,23 @@
     );
 
 
-  const currentPriceEl =
+  
+   const historyPage =
+     document.getElementById(
+       "historyPage"
+     );
+
+   const historyBalanceEl =
+     document.getElementById(
+       "historyBalance"
+     );
+
+   const historyListEl =
+     document.getElementById(
+       "historyList"
+     );
+
+const currentPriceEl =
     document.getElementById(
       "currentPrice"
     );
@@ -1892,21 +2113,407 @@
     }, 1800);
 
   }
+   /* =====================================================
+      BALANCE & HISTORY
+   ===================================================== */
+
+   function saveBalanceState() {
+
+     try {
+
+       localStorage.setItem(
+         BALANCE_STORAGE_KEY,
+         String(balance)
+       );
+
+       localStorage.setItem(
+         HISTORY_STORAGE_KEY,
+         JSON.stringify(balanceHistory)
+       );
+
+     } catch (error) {
+
+       console.error(
+         "Could not save balance state:",
+         error
+       );
+
+     }
+
+   }
 
 
-  /* =====================================================
-     BALANCE
-  ===================================================== */
+   function loadBalanceState() {
 
-  function updateBalance() {
+     try {
 
-    balanceEl.textContent =
-      formatCredits(balance);
+       const savedBalance =
+         Number(
+           localStorage.getItem(
+             BALANCE_STORAGE_KEY
+           )
+         );
 
-  }
+       const savedHistory =
+         JSON.parse(
+           localStorage.getItem(
+             HISTORY_STORAGE_KEY
+           ) || "[]"
+         );
+
+       if (
+         Number.isFinite(savedBalance) &&
+         savedBalance >= 0
+       ) {
+
+         balance =
+           Number(
+             savedBalance.toFixed(2)
+           );
+
+       }
+
+       if (
+         Array.isArray(savedHistory)
+       ) {
+
+         balanceHistory =
+           savedHistory
+             .filter(
+               item =>
+                 item &&
+                 Number.isFinite(
+                   Number(item.amount)
+                 )
+             )
+             .slice(0, 200);
+
+       }
+
+     } catch (error) {
+
+       console.error(
+         "Could not load balance state:",
+         error
+       );
+
+     }
+
+   }
 
 
-  updateBalance();
+   function updateBalance() {
+
+     const formatted =
+       formatCredits(balance);
+
+     balanceEl.textContent =
+       formatted;
+
+     historyBalanceEl.textContent =
+       formatted;
+
+   }
+
+
+   function addBalanceTransaction(
+     amount,
+     activity,
+     detail = ""
+   ) {
+
+     const numericAmount =
+       Number(amount);
+
+     if (
+       !Number.isFinite(numericAmount) ||
+       numericAmount === 0
+     ) {
+       return;
+     }
+
+     balance += numericAmount;
+
+     balance =
+       Number(
+         balance.toFixed(2)
+       );
+
+     balanceHistory.unshift({
+       id:
+         `${Date.now()}-${Math.random()
+           .toString(36)
+           .slice(2, 8)}`,
+       amount:
+         Number(
+           numericAmount.toFixed(2)
+         ),
+       activity:
+         activity,
+       detail:
+         detail,
+       timestamp:
+         new Date().toISOString(),
+       balanceAfter:
+         balance
+     });
+
+     balanceHistory =
+       balanceHistory.slice(0, 200);
+
+     saveBalanceState();
+     updateBalance();
+     renderBalanceHistory();
+
+   }
+
+
+   function formatHistoryDate(timestamp) {
+
+     const date = new Date(timestamp);
+     const now = new Date();
+     const yesterday = new Date();
+
+     yesterday.setDate(
+       yesterday.getDate() - 1
+     );
+
+     if (
+       date.toDateString() ===
+       now.toDateString()
+     ) {
+       return "Today";
+     }
+
+     if (
+       date.toDateString() ===
+       yesterday.toDateString()
+     ) {
+       return "Yesterday";
+     }
+
+     return date.toLocaleDateString(
+       "en-US",
+       {
+         month: "short",
+         day: "numeric",
+         year: "numeric"
+       }
+     );
+
+   }
+
+
+   function formatHistoryTime(timestamp) {
+
+     return new Date(
+       timestamp
+     ).toLocaleTimeString(
+       "en-US",
+       {
+         hour: "2-digit",
+         minute: "2-digit"
+       }
+     );
+
+   }
+
+
+   function getHistoryIcon(activity) {
+
+     const value =
+       String(activity).toLowerCase();
+
+     if (value.includes("win")) {
+       return "▲";
+     }
+
+     if (value.includes("loss")) {
+       return "▼";
+     }
+
+     if (value.includes("quest")) {
+       return "🧠";
+     }
+
+     return "✦";
+
+   }
+
+
+   function escapeHtml(value) {
+
+     return String(value)
+       .replace(/&/g, "&amp;")
+       .replace(/</g, "&lt;")
+       .replace(/>/g, "&gt;")
+       .replace(/"/g, "&quot;")
+       .replace(/'/g, "&#039;");
+
+   }
+
+
+   function renderBalanceHistory() {
+
+     historyBalanceEl.textContent =
+       formatCredits(balance);
+
+     if (
+       balanceHistory.length === 0
+     ) {
+
+       historyListEl.innerHTML = `
+         <div class="card history-empty">
+           <div class="history-empty-icon">
+             📜
+           </div>
+
+           <div class="history-empty-title">
+             No balance activity yet
+           </div>
+
+           <div class="history-empty-text">
+             Your Virtual Credit movements will appear here.
+           </div>
+         </div>
+       `;
+
+       return;
+
+     }
+
+     const groups = {};
+
+     balanceHistory.forEach(
+       transaction => {
+
+         const key =
+           formatHistoryDate(
+             transaction.timestamp
+           );
+
+         if (!groups[key]) {
+           groups[key] = [];
+         }
+
+         groups[key].push(
+           transaction
+         );
+
+       }
+     );
+
+
+     historyListEl.innerHTML =
+       Object.entries(groups)
+         .map(
+           ([dateLabel, transactions]) => {
+
+             const items =
+               transactions
+                 .map(
+                   transaction => {
+
+                     const amount =
+                       Number(
+                         transaction.amount
+                       );
+
+                     const type =
+                       amount > 0
+                         ? "positive"
+                         : "negative";
+
+                     const sign =
+                       amount > 0
+                         ? "+"
+                         : "";
+
+                     return `
+                       <div class="card history-item">
+
+                         <div class="history-left">
+
+                           <div class="history-top">
+
+                             <span class="history-icon">
+                               ${getHistoryIcon(
+                                 transaction.activity
+                               )}
+                             </span>
+
+                             <span class="history-activity">
+                               ${escapeHtml(
+                                 transaction.activity
+                               )}
+                             </span>
+
+                           </div>
+
+                           ${
+                             transaction.detail
+                               ? `
+                                 <div class="history-detail">
+                                   ${escapeHtml(
+                                     transaction.detail
+                                   )}
+                                 </div>
+                               `
+                               : ""
+                           }
+
+                         </div>
+
+                         <div class="history-right">
+
+                           <div class="history-amount ${type}">
+                             ${sign}${formatCredits(
+                               Math.abs(amount)
+                             )} Credits
+                           </div>
+
+                           <div class="history-time">
+                             ${formatHistoryTime(
+                               transaction.timestamp
+                             )}
+                           </div>
+
+                           <div class="history-after">
+                             Balance: ${formatCredits(
+                               Number(
+                                 transaction.balanceAfter
+                               )
+                             )}
+                           </div>
+
+                         </div>
+
+                       </div>
+                     `;
+
+                   }
+                 )
+                 .join("");
+
+             return `
+               <div class="history-day">
+                 ${escapeHtml(dateLabel)}
+               </div>
+               ${items}
+             `;
+
+           }
+         )
+         .join("");
+
+   }
+
+
+   loadBalanceState();
+   updateBalance();
+   renderBalanceHistory();
+
+
 
 
   /* =====================================================
@@ -1947,126 +2554,136 @@
     document.getElementById(
       "navPrediction"
     );
+   function showPage(page) {
+
+     currentPage =
+       page;
+
+     homePage.style.display =
+       "none";
+
+     questPage.style.display =
+       "none";
+
+     predictionPage.style.display =
+       "none";
+
+     historyPage.style.display =
+       "none";
+
+     navHome.classList.remove(
+       "active"
+     );
+
+     navQuest.classList.remove(
+       "active"
+     );
+
+     navPrediction.classList.remove(
+       "active"
+     );
+
+     navHistory.classList.remove(
+       "active"
+     );
 
 
-  function showPage(page) {
+     if (page === "home") {
 
-    homePage.style.display =
-      "none";
+       homePage.style.display =
+         "block";
 
-    questPage.style.display =
-      "none";
+       navHome.classList.add(
+         "active"
+       );
 
-    predictionPage.style.display =
-      "none";
-
-
-    navHome.classList.remove(
-      "active"
-    );
-
-    navQuest.classList.remove(
-      "active"
-    );
-
-    navPrediction.classList.remove(
-      "active"
-    );
+     }
 
 
-    if (page === "home") {
+     if (page === "quest") {
 
-      homePage.style.display =
-        "block";
+       questPage.style.display =
+         "block";
 
-      navHome.classList.add(
-        "active"
-      );
+       navQuest.classList.add(
+         "active"
+       );
 
-    }
-
-
-    if (page === "quest") {
-
-      questPage.style.display =
-        "block";
-
-      navQuest.classList.add(
-        "active"
-      );
-
-    }
+     }
 
 
-    if (page === "prediction") {
+     if (page === "prediction") {
 
-      predictionPage.style.display =
-        "block";
+       predictionPage.style.display =
+         "block";
 
-      navPrediction.classList.add(
-        "active"
-      );
+       navPrediction.classList.add(
+         "active"
+       );
 
+       resizeChart();
+       drawChart();
 
-      resizeChart();
-
-      drawChart();
-
-    }
-
-  }
+     }
 
 
-  navHome.addEventListener(
-    "click",
-    () => {
+     if (page === "history") {
 
-      if (predictionActive) {
+       historyPage.style.display =
+         "block";
 
-        showToast(
-          "Finish your prediction first"
-        );
+       navHistory.classList.add(
+         "active"
+       );
 
-        return;
+       renderBalanceHistory();
 
-      }
+     }
 
-      showPage("home");
-
-    }
-  );
+   }
 
 
-  navQuest.addEventListener(
-    "click",
-    () => {
+   navHome.addEventListener(
+     "click",
+     () => {
 
-      if (predictionActive) {
+       showPage("home");
 
-        showToast(
-          "Finish your prediction first"
-        );
-
-        return;
-
-      }
-
-      showPage("quest");
-
-    }
-  );
+     }
+   );
 
 
-  navPrediction.addEventListener(
-    "click",
-    () => {
+   navQuest.addEventListener(
+     "click",
+     () => {
 
-      showPage(
-        "prediction"
-      );
+       showPage("quest");
 
-    }
-  );
+     }
+   );
+
+
+   navHistory.addEventListener(
+     "click",
+     () => {
+
+       showPage("history");
+
+     }
+   );
+
+
+   navPrediction.addEventListener(
+     "click",
+     () => {
+
+       showPage("prediction");
+
+     }
+   );
+
+
+
 
 
   /* =====================================================
@@ -3822,30 +4439,31 @@
   /* =====================================================
      LOCK / UNLOCK CONTROLS
   ===================================================== */
+   function setPredictionControlsLocked(
+     locked
+   ) {
 
-  function setPredictionControlsLocked(
-    locked
-  ) {
+     upBtn.disabled =
+       locked;
 
-    upBtn.disabled =
-      locked;
+     downBtn.disabled =
+       locked;
 
+     document
+       .querySelectorAll(
+         ".stake-btn"
+       )
+       .forEach(
+         button => {
 
-    downBtn.disabled =
-      locked;
+           button.disabled =
+             locked;
 
+         }
+       );
 
-    document
-      .querySelectorAll(
-        ".stake-btn"
-      )
-      .forEach(
-        button => {
+   }
 
-          button.disabled =
-            locked;
-
-        }
       );
 
 
@@ -4368,25 +4986,19 @@
       UPDATE BALANCE
       ================================================
     */
+     if (creditChange !== 0) {
 
-    balance +=
-      creditChange;
+       addBalanceTransaction(
+         creditChange,
+         result === "WIN"
+           ? "Prediction Win"
+           : "Prediction Loss",
+         `${selectedName} • ${predictionDirection}`
+       );
 
+     }
 
-    /*
-      Protect against tiny floating-point values.
-    */
-
-    balance =
-      Math.round(
-        balance * 100
-      ) / 100;
-
-
-    updateBalance();
-
-
-    /*
+/*
       Show result.
     */
 
