@@ -4439,46 +4439,16 @@ const currentPriceEl =
   /* =====================================================
      LOCK / UNLOCK CONTROLS
   ===================================================== */
-   function setPredictionControlsLocked(
-     locked
-   ) {
+   function setPredictionControlsLocked(locked) {
 
-     upBtn.disabled =
-       locked;
-
-     downBtn.disabled =
-       locked;
-
-     document
-       .querySelectorAll(
-         ".stake-btn"
-       )
-       .forEach(
-         button => {
-
-           button.disabled =
-             locked;
-
-         }
-       );
-
-   }
-
-      );
-
+    upBtn.disabled = locked;
+    downBtn.disabled = locked;
 
     document
-      .querySelectorAll(
-        ".market-btn"
-      )
-      .forEach(
-        button => {
-
-          button.disabled =
-            locked;
-
-        }
-      );
+      .querySelectorAll(".stake-btn")
+      .forEach(button => {
+        button.disabled = locked;
+      });
 
   }
 
