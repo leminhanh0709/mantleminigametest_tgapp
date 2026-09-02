@@ -1,31 +1,19 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-  <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
-  <meta name="theme-color" content="#ffffff">
-
-  <title>Mantle Trading Arena</title>
+  <meta charset="UTF-8" />
+  <meta
+    name="viewport"
+    content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no"
+  />
+  <title>Mantle Arena</title>
 
   <script src="https://telegram.org/js/telegram-web-app.js"></script>
 
   <style>
-    :root {
-      --bg: #f5f5f5;
-      --card: #ffffff;
-      --text: #111111;
-      --muted: #777777;
-      --border: #e8e8e8;
-      --mantle: #7b61ff;
-      --mantle-light: #eeeaff;
-      --green: #18a957;
-      --green-light: #e9f8ef;
-      --red: #e5484d;
-      --red-light: #fdebec;
-    }
-
     * {
       box-sizing: border-box;
+      -webkit-tap-highlight-color: transparent;
     }
 
     html,
@@ -34,9 +22,8 @@
       padding: 0;
       width: 100%;
       min-height: 100%;
-    }
-
-    body {
+      background: #09090b;
+      color: #ffffff;
       font-family:
         -apple-system,
         BlinkMacSystemFont,
@@ -45,10 +32,10 @@
         Helvetica,
         Arial,
         sans-serif;
+    }
 
-      background: var(--bg);
-      color: var(--text);
-      -webkit-font-smoothing: antialiased;
+    body {
+      overflow-x: hidden;
     }
 
     button {
@@ -58,13 +45,16 @@
     .app {
       width: 100%;
       max-width: 520px;
+      min-height: 100vh;
       margin: 0 auto;
-      padding: 18px 16px 90px;
+      padding: 18px 16px 145px;
     }
 
-    /* HEADER */
+    /* =========================
+       HEADER
+    ========================= */
 
-    .topbar {
+    .header {
       display: flex;
       align-items: center;
       justify-content: space-between;
@@ -77,49 +67,48 @@
       gap: 10px;
     }
 
-    .mantle-mark {
+    .brand-logo {
       width: 38px;
       height: 38px;
       border-radius: 12px;
-      background: var(--mantle);
+      background: #ffffff;
+      color: #111111;
       display: flex;
       align-items: center;
       justify-content: center;
-      color: white;
-      font-size: 19px;
-      font-weight: 800;
+      font-weight: 900;
+      font-size: 20px;
     }
 
-    .brand-name {
-      font-size: 17px;
-      font-weight: 750;
+    .brand-text {
+      display: flex;
+      flex-direction: column;
+      gap: 1px;
+    }
+
+    .brand-title {
+      font-size: 16px;
+      font-weight: 800;
+      letter-spacing: -0.2px;
     }
 
     .brand-subtitle {
       font-size: 11px;
-      color: var(--muted);
-      margin-top: 2px;
+      color: #71717a;
     }
 
-    .avatar {
-      width: 40px;
-      height: 40px;
-      border-radius: 50%;
-      background: #ddd;
-      display: flex;
-      align-items: center;
-      justify-content: center;
+    .telegram-user {
+      font-size: 12px;
+      color: #a1a1aa;
+      max-width: 120px;
       overflow: hidden;
-      font-weight: 700;
+      text-overflow: ellipsis;
+      white-space: nowrap;
     }
 
-    .avatar img {
-      width: 100%;
-      height: 100%;
-      object-fit: cover;
-    }
-
-    /* PAGES */
+    /* =========================
+       PAGES
+    ========================= */
 
     .page {
       display: none;
@@ -129,200 +118,203 @@
       display: block;
     }
 
-    .page-title {
-      font-size: 27px;
-      font-weight: 800;
-      letter-spacing: -0.7px;
-      margin-bottom: 5px;
+    /* =========================
+       HOME
+    ========================= */
+
+    .hero {
+      margin-bottom: 18px;
     }
 
-    .page-description {
-      color: var(--muted);
+    .hero-title {
+      font-size: 30px;
+      line-height: 1.08;
+      font-weight: 850;
+      letter-spacing: -1px;
+      margin: 0 0 8px;
+    }
+
+    .hero-description {
+      margin: 0;
+      color: #a1a1aa;
       font-size: 14px;
-      margin-bottom: 20px;
+      line-height: 1.5;
     }
-
-    /* BALANCE */
 
     .balance-card {
-      background: var(--card);
-      border-radius: 22px;
-      padding: 22px;
-      margin-bottom: 14px;
-      border: 1px solid var(--border);
+      margin-top: 22px;
+      padding: 20px;
+      border-radius: 20px;
+      background:
+        linear-gradient(
+          135deg,
+          #17171a 0%,
+          #111113 100%
+        );
+      border: 1px solid #27272a;
     }
 
     .balance-label {
-      color: var(--muted);
-      font-size: 13px;
+      color: #71717a;
+      font-size: 12px;
       margin-bottom: 7px;
     }
 
     .balance-value {
-      font-size: 35px;
-      line-height: 1;
-      font-weight: 800;
+      font-size: 34px;
+      font-weight: 850;
       letter-spacing: -1px;
     }
 
     .balance-unit {
-      margin-top: 7px;
-      color: var(--muted);
-      font-size: 13px;
+      margin-top: 4px;
+      font-size: 12px;
+      color: #71717a;
     }
 
-    /* PROFILE */
-
-    .profile-card {
-      background: var(--card);
-      border-radius: 18px;
+    .account-card {
+      margin-top: 12px;
       padding: 16px;
-      border: 1px solid var(--border);
-      display: flex;
-      align-items: center;
-      gap: 13px;
-      margin-bottom: 14px;
+      border-radius: 18px;
+      background: #111113;
+      border: 1px solid #27272a;
     }
 
-    .profile-avatar {
-      width: 46px;
-      height: 46px;
-      border-radius: 50%;
-      background: var(--mantle-light);
-      color: var(--mantle);
-      display: flex;
-      align-items: center;
-      justify-content: center;
-      font-weight: 800;
-      font-size: 17px;
-      overflow: hidden;
-    }
-
-    .profile-avatar img {
-      width: 100%;
-      height: 100%;
-      object-fit: cover;
-    }
-
-    .profile-name {
-      font-weight: 700;
-      font-size: 15px;
-    }
-
-    .profile-username {
-      color: var(--muted);
-      font-size: 13px;
-      margin-top: 3px;
-    }
-
-    .telegram-badge {
-      margin-left: auto;
+    .account-label {
+      color: #71717a;
       font-size: 11px;
-      background: #f0f0f0;
-      padding: 6px 9px;
-      border-radius: 8px;
-      color: var(--muted);
+      margin-bottom: 6px;
     }
 
-    /* QUICK ACTION */
+    .account-name {
+      font-size: 15px;
+      font-weight: 700;
+    }
+
+    .play-section {
+      margin-top: 24px;
+    }
 
     .section-title {
-      font-size: 16px;
+      font-size: 15px;
       font-weight: 750;
-      margin: 23px 0 11px;
+      margin-bottom: 12px;
     }
 
-    .action-card {
-      background: var(--card);
-      border: 1px solid var(--border);
+    .play-card {
+      width: 100%;
+      border: 1px solid #27272a;
+      background: #111113;
       border-radius: 18px;
       padding: 17px;
-      display: flex;
-      align-items: center;
-      gap: 14px;
+      text-align: left;
+      color: #ffffff;
       cursor: pointer;
-      transition: transform 0.15s ease;
+      margin-bottom: 10px;
+      transition: transform 0.15s ease, background 0.15s ease;
     }
 
-    .action-card:active {
-      transform: scale(0.98);
+    .play-card:active {
+      transform: scale(0.985);
+      background: #18181b;
     }
 
-    .action-icon {
-      width: 44px;
-      height: 44px;
-      border-radius: 13px;
-      background: var(--mantle-light);
-      display: flex;
-      align-items: center;
-      justify-content: center;
-      font-size: 21px;
+    .play-card-icon {
+      font-size: 22px;
+      margin-bottom: 10px;
     }
 
-    .action-content {
-      flex: 1;
-    }
-
-    .action-title {
-      font-weight: 700;
+    .play-card-title {
       font-size: 15px;
+      font-weight: 750;
+      margin-bottom: 4px;
     }
 
-    .action-description {
-      color: var(--muted);
+    .play-card-description {
+      color: #71717a;
       font-size: 12px;
-      margin-top: 4px;
+      line-height: 1.4;
     }
 
-    .arrow {
-      color: #aaa;
-      font-size: 20px;
+    /* =========================
+       DAILY QUEST
+    ========================= */
+
+    .page-heading {
+      margin-bottom: 22px;
     }
 
-    /* QUEST */
+    .page-heading h1 {
+      margin: 0 0 7px;
+      font-size: 28px;
+      letter-spacing: -0.8px;
+    }
 
-    .coming-card {
-      background: var(--card);
-      border: 1px solid var(--border);
+    .page-heading p {
+      margin: 0;
+      color: #71717a;
+      font-size: 13px;
+    }
+
+    .coming-soon {
+      margin-top: 40px;
+      min-height: 250px;
+      border: 1px solid #27272a;
+      background: #111113;
       border-radius: 22px;
-      padding: 42px 25px;
-      text-align: center;
-      margin-top: 15px;
-    }
-
-    .coming-icon {
-      width: 64px;
-      height: 64px;
-      margin: 0 auto 17px;
-      border-radius: 20px;
-      background: #f0f0f0;
       display: flex;
+      flex-direction: column;
       align-items: center;
       justify-content: center;
-      font-size: 29px;
+      text-align: center;
+      padding: 30px;
     }
 
-    .coming-title {
-      font-size: 20px;
+    .coming-soon-icon {
+      font-size: 42px;
+      margin-bottom: 15px;
+    }
+
+    .coming-soon-title {
+      font-size: 18px;
       font-weight: 800;
+      margin-bottom: 7px;
     }
 
-    .coming-description {
-      color: var(--muted);
+    .coming-soon-text {
+      color: #71717a;
       font-size: 13px;
       line-height: 1.5;
-      max-width: 280px;
-      margin: 8px auto 0;
+      max-width: 270px;
     }
 
-    /* PREDICTION */
+    /* =========================
+       PREDICTION
+    ========================= */
+
+    .prediction-header {
+      margin-bottom: 18px;
+    }
+
+    .prediction-title {
+      margin: 0 0 6px;
+      font-size: 28px;
+      letter-spacing: -0.8px;
+    }
+
+    .prediction-subtitle {
+      margin: 0;
+      color: #71717a;
+      font-size: 13px;
+    }
 
     .market-selector {
-      background: var(--card);
-      border: 1px solid var(--border);
-      border-radius: 17px;
-      padding: 14px 16px;
       width: 100%;
+      border: 1px solid #27272a;
+      background: #111113;
+      color: #ffffff;
+      border-radius: 16px;
+      padding: 14px;
       display: flex;
       align-items: center;
       justify-content: space-between;
@@ -333,221 +325,240 @@
     .market-left {
       display: flex;
       align-items: center;
-      gap: 11px;
+      gap: 12px;
     }
 
     .stock-icon {
       width: 40px;
       height: 40px;
       border-radius: 12px;
-      background: #f0f0f0;
+      background: #1f1f22;
       display: flex;
       align-items: center;
       justify-content: center;
-      font-weight: 800;
+      font-weight: 850;
       font-size: 13px;
     }
 
     .market-symbol {
-      font-weight: 800;
       font-size: 15px;
+      font-weight: 800;
+      text-align: left;
     }
 
     .market-name {
-      color: var(--muted);
-      font-size: 12px;
+      color: #71717a;
+      font-size: 11px;
       margin-top: 3px;
+      text-align: left;
     }
 
     .market-arrow {
-      color: #aaa;
+      color: #71717a;
+      font-size: 16px;
     }
 
     .price-card {
-      background: var(--card);
-      border: 1px solid var(--border);
-      border-radius: 22px;
+      border: 1px solid #27272a;
+      background: #111113;
+      border-radius: 20px;
       padding: 20px;
       margin-bottom: 12px;
     }
 
-    .price-header {
-      display: flex;
-      justify-content: space-between;
-      align-items: flex-start;
-    }
-
-    .current-label {
-      color: var(--muted);
-      font-size: 12px;
+    .price-label {
+      color: #71717a;
+      font-size: 11px;
+      margin-bottom: 6px;
     }
 
     .current-price {
-      font-size: 31px;
-      font-weight: 800;
-      letter-spacing: -0.8px;
-      margin-top: 5px;
+      font-size: 32px;
+      font-weight: 850;
+      letter-spacing: -1px;
+      margin-bottom: 4px;
     }
 
     .price-change {
-      background: var(--green-light);
-      color: var(--green);
-      padding: 7px 9px;
-      border-radius: 9px;
-      font-size: 12px;
+      font-size: 13px;
       font-weight: 700;
     }
 
-    /* CHART */
-
-    .chart {
-      width: 100%;
-      height: 120px;
-      margin-top: 18px;
+    .price-change.positive {
+      color: #4ade80;
     }
 
-    .chart svg {
+    .price-change.negative {
+      color: #f87171;
+    }
+
+    .price-change.neutral {
+      color: #a1a1aa;
+    }
+
+    .chart {
+      margin-top: 20px;
       width: 100%;
-      height: 100%;
-      overflow: visible;
+      height: 90px;
+      position: relative;
+      overflow: hidden;
+      border-radius: 12px;
+      background:
+        linear-gradient(
+          to bottom,
+          rgba(255,255,255,0.03) 1px,
+          transparent 1px
+        );
+      background-size: 100% 30px;
     }
 
     .chart-line {
+      position: absolute;
+      left: 0;
+      top: 0;
+      width: 100%;
+      height: 100%;
+    }
+
+    .chart-line svg {
+      width: 100%;
+      height: 100%;
+      display: block;
+    }
+
+    .chart-path {
       fill: none;
-      stroke: var(--mantle);
-      stroke-width: 3;
+      stroke: #ffffff;
+      stroke-width: 2.5;
       stroke-linecap: round;
       stroke-linejoin: round;
+      opacity: 0.85;
     }
-
-    .chart-fill {
-      fill: url(#chartGradient);
-      opacity: 0.15;
-    }
-
-    /* ROUND */
 
     .round-card {
-      background: var(--card);
-      border: 1px solid var(--border);
-      border-radius: 22px;
-      padding: 20px;
+      border: 1px solid #27272a;
+      background: #111113;
+      border-radius: 20px;
+      padding: 18px;
+      margin-bottom: 12px;
+    }
+
+    .round-top {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      margin-bottom: 14px;
     }
 
     .round-label {
-      text-align: center;
-      color: var(--muted);
-      font-size: 12px;
+      color: #71717a;
+      font-size: 11px;
     }
 
     .countdown {
-      text-align: center;
-      font-size: 27px;
-      font-weight: 800;
-      margin-top: 4px;
+      font-size: 20px;
+      font-weight: 850;
+      letter-spacing: 0.5px;
     }
 
     .question {
-      text-align: center;
       font-size: 16px;
-      font-weight: 700;
-      margin: 22px 0 13px;
+      font-weight: 750;
+      margin-bottom: 14px;
     }
 
-    .direction-buttons {
+    .direction-grid {
       display: grid;
       grid-template-columns: 1fr 1fr;
       gap: 10px;
     }
 
     .direction {
-      border: 2px solid var(--border);
-      background: white;
+      border: 1px solid #27272a;
       border-radius: 15px;
-      padding: 15px 10px;
+      padding: 15px 12px;
+      color: #ffffff;
+      background: #18181b;
+      font-weight: 800;
       cursor: pointer;
-      min-height: 76px;
+      transition: 0.15s ease;
     }
 
-    .direction-icon {
-      font-size: 24px;
-      line-height: 1;
-    }
-
-    .direction-label {
-      margin-top: 7px;
-      font-weight: 750;
-      font-size: 14px;
+    .direction:active {
+      transform: scale(0.985);
     }
 
     .direction.up.selected {
-      border-color: var(--green);
-      background: var(--green-light);
-      color: var(--green);
+      background: #1b3324;
+      border-color: #4ade80;
+      color: #4ade80;
     }
 
     .direction.down.selected {
-      border-color: var(--red);
-      background: var(--red-light);
-      color: var(--red);
+      background: #351d20;
+      border-color: #f87171;
+      color: #f87171;
     }
 
-    .stake-label {
-      display: flex;
-      justify-content: space-between;
-      margin-top: 20px;
-      margin-bottom: 8px;
+    .stake-card {
+      border: 1px solid #27272a;
+      background: #111113;
+      border-radius: 20px;
+      padding: 18px;
+      margin-bottom: 12px;
+    }
+
+    .stake-title {
       font-size: 13px;
-      color: var(--muted);
+      font-weight: 750;
+      margin-bottom: 12px;
     }
 
-    .stake-options {
+    .stake-grid {
       display: grid;
       grid-template-columns: repeat(4, 1fr);
-      gap: 7px;
+      gap: 8px;
     }
 
     .stake {
-      border: 1px solid var(--border);
-      background: #fafafa;
-      border-radius: 10px;
-      padding: 10px 4px;
+      border: 1px solid #27272a;
+      background: #18181b;
+      color: #d4d4d8;
+      border-radius: 12px;
+      padding: 11px 5px;
       font-size: 12px;
       font-weight: 700;
       cursor: pointer;
     }
 
     .stake.selected {
-      border-color: var(--mantle);
-      background: var(--mantle-light);
-      color: var(--mantle);
+      background: #ffffff;
+      color: #111111;
+      border-color: #ffffff;
     }
 
     .predict-button {
       width: 100%;
       border: none;
-      background: var(--mantle);
-      color: white;
-      border-radius: 15px;
+      border-radius: 16px;
       padding: 16px;
-      font-weight: 800;
-      margin-top: 17px;
+      background: #ffffff;
+      color: #111111;
+      font-size: 14px;
+      font-weight: 850;
       cursor: pointer;
+      margin-top: 2px;
     }
 
     .predict-button:disabled {
-      opacity: 0.45;
+      background: #27272a;
+      color: #71717a;
       cursor: default;
     }
 
-    .note {
-      text-align: center;
-      color: var(--muted);
-      font-size: 10px;
-      margin-top: 10px;
-    }
-
-    /* BOTTOM NAV */
+    /* =========================
+       BOTTOM NAV
+    ========================= */
 
     .bottom-nav {
       position: fixed;
@@ -556,55 +567,65 @@
       transform: translateX(-50%);
       width: calc(100% - 24px);
       max-width: 500px;
-      background: rgba(255, 255, 255, 0.96);
-      border: 1px solid var(--border);
-      border-radius: 19px;
-      padding: 7px;
       display: grid;
       grid-template-columns: repeat(3, 1fr);
-      gap: 4px;
-      box-shadow: 0 8px 30px rgba(0,0,0,0.08);
-      z-index: 10;
+      gap: 6px;
+      padding: 7px;
+      border-radius: 18px;
+      background: rgba(20, 20, 23, 0.94);
+      border: 1px solid #27272a;
+      backdrop-filter: blur(18px);
+      -webkit-backdrop-filter: blur(18px);
+      z-index: 100;
     }
 
-    .nav-button {
+    .nav-item {
       border: none;
       background: transparent;
-      border-radius: 14px;
-      padding: 9px 5px;
-      color: var(--muted);
+      color: #71717a;
+      padding: 9px 4px;
+      border-radius: 13px;
       cursor: pointer;
-      font-size: 11px;
-      font-weight: 650;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      gap: 3px;
+    }
+
+    .nav-item.active {
+      background: #ffffff;
+      color: #111111;
     }
 
     .nav-icon {
-      font-size: 18px;
-      display: block;
-      margin-bottom: 3px;
+      font-size: 17px;
+      line-height: 1;
     }
 
-    .nav-button.active {
-      background: var(--mantle-light);
-      color: var(--mantle);
+    .nav-label {
+      font-size: 9px;
+      font-weight: 750;
     }
 
-    /* TOAST */
+    /* =========================
+       TOAST
+    ========================= */
 
     .toast {
       position: fixed;
       left: 50%;
-      bottom: 88px;
-      transform: translateX(-50%) translateY(15px);
-      background: #111;
-      color: white;
-      padding: 11px 15px;
+      bottom: 95px;
+      transform: translateX(-50%) translateY(20px);
+      background: #ffffff;
+      color: #111111;
       border-radius: 12px;
-      font-size: 13px;
+      padding: 11px 15px;
+      font-size: 12px;
+      font-weight: 750;
       opacity: 0;
       pointer-events: none;
       transition: all 0.2s ease;
-      z-index: 20;
+      z-index: 200;
       white-space: nowrap;
     }
 
@@ -613,38 +634,55 @@
       transform: translateX(-50%) translateY(0);
     }
 
-    @media (prefers-color-scheme: dark) {
-      body {
-        background: #181818;
-        color: #ffffff;
+    /* =========================
+       LIVE INDICATOR
+    ========================= */
+
+    .live-status {
+      display: inline-flex;
+      align-items: center;
+      gap: 5px;
+      color: #71717a;
+      font-size: 10px;
+      margin-top: 7px;
+    }
+
+    .live-dot {
+      width: 6px;
+      height: 6px;
+      border-radius: 50%;
+      background: #71717a;
+    }
+
+    .live-status.connected {
+      color: #4ade80;
+    }
+
+    .live-status.connected .live-dot {
+      background: #4ade80;
+    }
+
+    .live-status.error {
+      color: #f87171;
+    }
+
+    .live-status.error .live-dot {
+      background: #f87171;
+    }
+
+    @media (max-width: 360px) {
+      .hero-title,
+      .prediction-title,
+      .page-heading h1 {
+        font-size: 25px;
       }
 
-      .card,
-      .balance-card,
-      .profile-card,
-      .action-card,
-      .coming-card,
-      .market-selector,
-      .price-card,
-      .round-card,
-      .bottom-nav {
-        background: #242424;
-        border-color: #333;
+      .current-price {
+        font-size: 28px;
       }
 
-      .direction,
-      .stake {
-        background: #242424;
-        border-color: #383838;
-        color: white;
-      }
-
-      .stake {
-        background: #292929;
-      }
-
-      .bottom-nav {
-        background: rgba(36,36,36,0.96);
+      .stake-grid {
+        gap: 5px;
       }
     }
   </style>
@@ -652,834 +690,1264 @@
 
 <body>
 
-<div class="app">
+  <div class="app">
 
-  <!-- TOP BAR -->
-  <div class="topbar">
-    <div class="brand">
-      <div class="mantle-mark">M</div>
+    <!-- =========================
+         HEADER
+    ========================= -->
 
-      <div>
-        <div class="brand-name">Mantle Arena</div>
-        <div class="brand-subtitle">Community Prediction Game</div>
-      </div>
-    </div>
+    <header class="header">
+      <div class="brand">
+        <div class="brand-logo">M</div>
 
-    <div class="avatar" id="topAvatar">M</div>
-  </div>
-
-
-  <!-- HOME -->
-  <section class="page active" id="homePage">
-
-    <div class="page-title">Welcome back 👋</div>
-    <div class="page-description">
-      Your Mantle community account
-    </div>
-
-    <div class="balance-card">
-
-      <div class="balance-label">
-        YOUR BALANCE
-      </div>
-
-      <div class="balance-value" id="balanceValue">
-        10,000
-      </div>
-
-      <div class="balance-unit">
-        Virtual Credits
-      </div>
-
-    </div>
-
-
-    <div class="profile-card">
-
-      <div class="profile-avatar" id="profileAvatar">
-        M
-      </div>
-
-      <div>
-        <div class="profile-name" id="profileName">
-          Mantle Member
-        </div>
-
-        <div class="profile-username" id="profileUsername">
-          @telegram_user
+        <div class="brand-text">
+          <div class="brand-title">Mantle Arena</div>
+          <div class="brand-subtitle">Community Mini Game</div>
         </div>
       </div>
 
-      <div class="telegram-badge">
-        Telegram
+      <div class="telegram-user" id="telegramUser">
+        Guest
+      </div>
+    </header>
+
+
+    <!-- =========================
+         HOME PAGE
+    ========================= -->
+
+    <section class="page active" id="homePage">
+
+      <div class="hero">
+        <h1 class="hero-title">Play. Predict. Win.</h1>
+
+        <p class="hero-description">
+          Test your market instincts with Mantle Arena.
+        </p>
       </div>
 
-    </div>
 
+      <div class="balance-card">
 
-    <div class="section-title">
-      Play
-    </div>
-
-
-    <div class="action-card" id="predictionAction">
-
-      <div class="action-icon">
-        📈
-      </div>
-
-      <div class="action-content">
-
-        <div class="action-title">
-          Price Prediction
+        <div class="balance-label">
+          Your Balance
         </div>
 
-        <div class="action-description">
-          Predict tokenized stock prices
+        <div class="balance-value" id="balanceValue">
+          10,000
+        </div>
+
+        <div class="balance-unit">
+          Virtual Credits
         </div>
 
       </div>
 
-      <div class="arrow">
-        ›
+
+      <div class="account-card">
+
+        <div class="account-label">
+          Telegram Account
+        </div>
+
+        <div class="account-name" id="accountName">
+          Guest
+        </div>
+
       </div>
 
-    </div>
+
+      <div class="play-section">
+
+        <div class="section-title">
+          Play
+        </div>
 
 
-    <div class="action-card" id="questAction" style="margin-top:9px;">
+        <button
+          class="play-card"
+          id="playPredictionCard"
+          type="button"
+        >
 
-      <div class="action-icon">
-        🧠
+          <div class="play-card-icon">
+            📈
+          </div>
+
+          <div class="play-card-title">
+            Price Prediction
+          </div>
+
+          <div class="play-card-description">
+            Predict whether tokenized stocks will move up or down.
+          </div>
+
+        </button>
+
+
+        <button
+          class="play-card"
+          id="playQuestCard"
+          type="button"
+        >
+
+          <div class="play-card-icon">
+            🧠
+          </div>
+
+          <div class="play-card-title">
+            Daily Quest
+          </div>
+
+          <div class="play-card-description">
+            Daily questions and rewards are coming soon.
+          </div>
+
+        </button>
+
       </div>
 
-      <div class="action-content">
+    </section>
 
-        <div class="action-title">
+
+    <!-- =========================
+         DAILY QUEST PAGE
+    ========================= -->
+
+    <section class="page" id="questPage">
+
+      <div class="page-heading">
+
+        <h1>
           Daily Quest
+        </h1>
+
+        <p>
+          Complete daily questions and earn Virtual Credits.
+        </p>
+
+      </div>
+
+
+      <div class="coming-soon">
+
+        <div class="coming-soon-icon">
+          🧠
         </div>
 
-        <div class="action-description">
-          5 new questions every day
+        <div class="coming-soon-title">
+          Coming Soon
+        </div>
+
+        <div class="coming-soon-text">
+          New questions will arrive every day.
+          Answer them correctly to earn Virtual Credits.
         </div>
 
       </div>
 
-      <div class="arrow">
-        ›
+    </section>
+
+
+    <!-- =========================
+         PREDICTION PAGE
+    ========================= -->
+
+    <section class="page" id="predictionPage">
+
+      <div class="prediction-header">
+
+        <h1 class="prediction-title">
+          Price Prediction
+        </h1>
+
+        <p class="prediction-subtitle">
+          Where will the market go next?
+        </p>
+
       </div>
 
-    </div>
 
-  </section>
+      <!-- MARKET SELECTOR -->
 
+      <button
+        class="market-selector"
+        id="marketSelector"
+        type="button"
+      >
 
-  <!-- DAILY QUEST -->
-  <section class="page" id="questPage">
+        <div class="market-left">
 
-    <div class="page-title">
-      Daily Quest
-    </div>
-
-    <div class="page-description">
-      Complete daily challenges and earn Credits
-    </div>
-
-
-    <div class="coming-card">
-
-      <div class="coming-icon">
-        🔒
-      </div>
-
-      <div class="coming-title">
-        Coming soon
-      </div>
-
-      <div class="coming-description">
-        Daily questions will be available here.
-        Come back every day for new challenges.
-      </div>
-
-    </div>
-
-  </section>
-
-
-  <!-- PRICE PREDICTION -->
-  <section class="page" id="predictionPage">
-
-    <div class="page-title">
-      Price Prediction
-    </div>
-
-    <div class="page-description">
-      Predict where tokenized stocks are heading
-    </div>
-
-
-    <!-- MARKET SELECTOR -->
-    <button class="market-selector" id="marketSelector">
-
-      <div class="market-left">
-
-        <div class="stock-icon" id="stockIcon">
-          NV
-        </div>
-
-        <div>
-
-          <div class="market-symbol" id="marketSymbol">
-            NVDAX
+          <div class="stock-icon" id="stockIcon">
+            NV
           </div>
 
-          <div class="market-name" id="marketName">
-            NVIDIA Tokenized Stock
-          </div>
+          <div>
 
-        </div>
+            <div
+              class="market-symbol"
+              id="marketSymbol"
+            >
+              NVDAX
+            </div>
 
-      </div>
+            <div
+              class="market-name"
+              id="marketName"
+            >
+              NVIDIA Tokenized Stock
+            </div>
 
-      <div class="market-arrow">
-        ›
-      </div>
-
-    </button>
-
-
-    <!-- PRICE -->
-    <div class="price-card">
-
-      <div class="price-header">
-
-        <div>
-
-          <div class="current-label">
-            CURRENT PRICE
-          </div>
-
-          <div class="current-price" id="currentPrice">
-            $176.42
           </div>
 
         </div>
 
-        <div class="price-change">
-          +1.82%
+        <div class="market-arrow">
+          ›
         </div>
 
-      </div>
+      </button>
 
 
-      <div class="chart">
+      <!-- PRICE -->
 
-        <svg viewBox="0 0 500 120" preserveAspectRatio="none">
+      <div class="price-card">
 
-          <defs>
+        <div class="price-label">
+          Current Price
+        </div>
 
-            <linearGradient id="chartGradient"
-              x1="0"
-              y1="0"
-              x2="0"
-              y2="1">
-
-              <stop offset="0%" stop-color="#7b61ff"/>
-              <stop offset="100%" stop-color="#7b61ff" stop-opacity="0"/>
-
-            </linearGradient>
-
-          </defs>
-
-          <path
-            class="chart-fill"
-            d="M0,100 L30,92 L60,96 L90,70 L120,78 L150,61 L180,66 L210,52 L240,58 L270,38 L300,45 L330,28 L360,34 L390,19 L420,27 L450,10 L500,5 L500,120 L0,120 Z"
-          />
-
-          <path
-            class="chart-line"
-            d="M0,100 L30,92 L60,96 L90,70 L120,78 L150,61 L180,66 L210,52 L240,58 L270,38 L300,45 L330,28 L360,34 L390,19 L420,27 L450,10 L500,5"
-          />
-
-        </svg>
-
-      </div>
-
-    </div>
-
-
-    <!-- PREDICTION ROUND -->
-    <div class="round-card">
-
-      <div class="round-label">
-        ROUND ENDS IN
-      </div>
-
-      <div class="countdown" id="countdown">
-        04:59
-      </div>
-
-
-      <div class="question">
-        Will NVDAX be higher or lower
-        in 5 minutes?
-      </div>
-
-
-      <div class="direction-buttons">
-
-        <button
-          class="direction up"
-          id="upButton"
-          type="button"
+        <div
+          class="current-price"
+          id="currentPrice"
         >
+          --
+        </div>
 
-          <div class="direction-icon">
-            ↑
-          </div>
-
-          <div class="direction-label">
-            UP
-          </div>
-
-        </button>
-
-
-        <button
-          class="direction down"
-          id="downButton"
-          type="button"
+        <div
+          class="price-change neutral"
+          id="priceChange"
         >
+          --
+        </div>
 
-          <div class="direction-icon">
-            ↓
+        <div
+          class="live-status"
+          id="liveStatus"
+        >
+          <span class="live-dot"></span>
+          Connecting to Bybit
+        </div>
+
+
+        <div class="chart">
+
+          <div class="chart-line">
+
+            <svg
+              viewBox="0 0 500 100"
+              preserveAspectRatio="none"
+            >
+
+              <path
+                class="chart-path"
+                d="
+                  M0,70
+                  L35,65
+                  L70,72
+                  L105,55
+                  L140,62
+                  L175,48
+                  L210,52
+                  L245,35
+                  L280,43
+                  L315,30
+                  L350,38
+                  L385,24
+                  L420,31
+                  L455,18
+                  L500,22
+                "
+              />
+
+            </svg>
+
           </div>
 
-          <div class="direction-label">
-            DOWN
+        </div>
+
+      </div>
+
+
+      <!-- ROUND -->
+
+      <div class="round-card">
+
+        <div class="round-top">
+
+          <div class="round-label">
+            Prediction closes in
           </div>
 
-        </button>
+          <div
+            class="countdown"
+            id="countdown"
+          >
+            04:59
+          </div>
+
+        </div>
+
+
+        <div class="question">
+          Where will <span id="questionSymbol">NVDAX</span> go next?
+        </div>
+
+
+        <div class="direction-grid">
+
+          <button
+            class="direction up"
+            id="upButton"
+            type="button"
+          >
+            ↑ UP
+          </button>
+
+          <button
+            class="direction down"
+            id="downButton"
+            type="button"
+          >
+            ↓ DOWN
+          </button>
+
+        </div>
 
       </div>
 
 
-      <div class="stake-label">
+      <!-- STAKE -->
 
-        <span>
-          Stake
-        </span>
+      <div class="stake-card">
 
-        <span id="stakeDisplay">
-          100 Credits
-        </span>
+        <div class="stake-title">
+          Choose your stake
+        </div>
+
+
+        <div class="stake-grid">
+
+          <button
+            class="stake"
+            data-stake="100"
+            type="button"
+          >
+            100
+          </button>
+
+          <button
+            class="stake"
+            data-stake="500"
+            type="button"
+          >
+            500
+          </button>
+
+          <button
+            class="stake selected"
+            data-stake="1000"
+            type="button"
+          >
+            1,000
+          </button>
+
+          <button
+            class="stake"
+            data-stake="5000"
+            type="button"
+          >
+            5,000
+          </button>
+
+        </div>
 
       </div>
 
 
-      <div class="stake-options">
-
-        <button class="stake selected" data-stake="100">
-          100
-        </button>
-
-        <button class="stake" data-stake="500">
-          500
-        </button>
-
-        <button class="stake" data-stake="1000">
-          1,000
-        </button>
-
-        <button class="stake" data-stake="5000">
-          5,000
-        </button>
-
-      </div>
-
+      <!-- PREDICT -->
 
       <button
         class="predict-button"
         id="predictButton"
         disabled
+        type="button"
       >
         Select UP or DOWN
       </button>
 
+    </section>
 
-      <div class="note">
-        Simulation only · Virtual Credits have no monetary value
+  </div>
+
+
+  <!-- =========================
+       BOTTOM NAV
+  ========================= -->
+
+  <nav class="bottom-nav">
+
+    <button
+      class="nav-item active"
+      data-page="home"
+      type="button"
+    >
+
+      <div class="nav-icon">
+        🏠
       </div>
 
-    </div>
+      <div class="nav-label">
+        Home
+      </div>
 
-  </section>
-
-</div>
+    </button>
 
 
-<!-- BOTTOM NAV -->
+    <button
+      class="nav-item"
+      data-page="quest"
+      type="button"
+    >
 
-<nav class="bottom-nav">
+      <div class="nav-icon">
+        🧠
+      </div>
 
-  <button
-    class="nav-button active"
-    data-page="homePage"
-    type="button"
+      <div class="nav-label">
+        Daily Quest
+      </div>
+
+    </button>
+
+
+    <button
+      class="nav-item"
+      data-page="prediction"
+      type="button"
+    >
+
+      <div class="nav-icon">
+        📈
+      </div>
+
+      <div class="nav-label">
+        Prediction
+      </div>
+
+    </button>
+
+  </nav>
+
+
+  <!-- =========================
+       TOAST
+  ========================= -->
+
+  <div
+    class="toast"
+    id="toast"
   >
-
-    <span class="nav-icon">🏠</span>
-    Home
-
-  </button>
+    Prediction placed
+  </div>
 
 
-  <button
-    class="nav-button"
-    data-page="questPage"
-    type="button"
-  >
+  <script>
 
-    <span class="nav-icon">🧠</span>
-    Daily Quest
+    /* =====================================================
+       TELEGRAM
+    ===================================================== */
 
-  </button>
+    const tg = window.Telegram?.WebApp;
 
-
-  <button
-    class="nav-button"
-    data-page="predictionPage"
-    type="button"
-  >
-
-    <span class="nav-icon">📈</span>
-    Prediction
-
-  </button>
-
-</nav>
-
-
-<div class="toast" id="toast"></div>
-
-
-<script>
-
-  const tg = window.Telegram.WebApp;
-
-  tg.ready();
-  tg.expand();
-
-
-  /* -------------------------
-     TELEGRAM USER
-  ------------------------- */
-
-  const user = tg.initDataUnsafe?.user;
-
-  if (user) {
-
-    const name =
-      user.first_name ||
-      "Mantle Member";
-
-    const username =
-      user.username
-        ? "@" + user.username
-        : "@telegram_user";
-
-
-    document.getElementById("profileName").textContent = name;
-
-    document.getElementById("profileUsername").textContent = username;
-
-
-    const initials =
-      (
-        (user.first_name || "") +
-        (user.last_name || "")
-      )
-      .trim()
-      .slice(0, 2)
-      .toUpperCase();
-
-
-    document.getElementById("topAvatar").textContent =
-      initials || "M";
-
-    document.getElementById("profileAvatar").textContent =
-      initials || "M";
-
-  }
-
-
-  /* -------------------------
-     NAVIGATION
-  ------------------------- */
-
-  const pages =
-    document.querySelectorAll(".page");
-
-  const navButtons =
-    document.querySelectorAll(".nav-button");
-
-
-  function openPage(pageId) {
-
-    pages.forEach(page => {
-      page.classList.toggle(
-        "active",
-        page.id === pageId
-      );
-    });
-
-
-    navButtons.forEach(button => {
-
-      button.classList.toggle(
-        "active",
-        button.dataset.page === pageId
-      );
-
-    });
-
-    window.scrollTo({
-      top: 0,
-      behavior: "smooth"
-    });
-
-  }
-
-
-  navButtons.forEach(button => {
-
-    button.addEventListener(
-      "click",
-      () => openPage(button.dataset.page)
-    );
-
-  });
-
-
-  document
-    .getElementById("predictionAction")
-    .addEventListener(
-      "click",
-      () => openPage("predictionPage")
-    );
-
-
-  document
-    .getElementById("questAction")
-    .addEventListener(
-      "click",
-      () => openPage("questPage")
-    );
-
-
-  /* -------------------------
-     STOCK MOCK DATA
-  ------------------------- */
-
-  const stocks = [
-
-    {
-      symbol: "NVDAX",
-      name: "NVIDIA Tokenized Stock",
-      icon: "NV",
-      price: 176.42
-    },
-
-    {
-      symbol: "TSLAX",
-      name: "Tesla Tokenized Stock",
-      icon: "TS",
-      price: 344.21
-    },
-
-    {
-      symbol: "AAPLX",
-      name: "Apple Tokenized Stock",
-      icon: "AP",
-      price: 232.18
-    },
-
-    {
-      symbol: "AMZNX",
-      name: "Amazon Tokenized Stock",
-      icon: "AM",
-      price: 231.02
+    if (tg) {
+      tg.ready();
+      tg.expand();
     }
 
-  ];
+
+    /* =====================================================
+       TELEGRAM USER
+    ===================================================== */
+
+    const telegramUser = document.getElementById("telegramUser");
+    const accountName = document.getElementById("accountName");
+
+    const telegramUserData =
+      tg?.initDataUnsafe?.user || null;
 
 
-  let selectedStock = stocks[0];
+    if (telegramUserData) {
+
+      let displayName =
+        telegramUserData.first_name || "User";
+
+      if (telegramUserData.last_name) {
+        displayName += " " + telegramUserData.last_name;
+      }
+
+      telegramUser.textContent =
+        telegramUserData.username
+          ? "@" + telegramUserData.username
+          : displayName;
+
+      accountName.textContent =
+        telegramUserData.username
+          ? "@" + telegramUserData.username
+          : displayName;
+
+    } else {
+
+      telegramUser.textContent = "Guest";
+      accountName.textContent = "Guest";
+
+    }
 
 
-  /* -------------------------
-     MARKET SELECTOR
-  ------------------------- */
+    /* =====================================================
+       PAGE NAVIGATION
+    ===================================================== */
 
-  document
-    .getElementById("marketSelector")
-    .addEventListener(
-      "click",
-      () => {
-
-        const nextIndex =
-          (
-            stocks.indexOf(selectedStock) + 1
-          ) % stocks.length;
+    const pages = {
+      home: document.getElementById("homePage"),
+      quest: document.getElementById("questPage"),
+      prediction: document.getElementById("predictionPage")
+    };
 
 
-        selectedStock =
-          stocks[nextIndex];
+    const navItems =
+      document.querySelectorAll(".nav-item");
+
+
+    function showPage(pageName) {
+
+      Object.values(pages).forEach(page => {
+        page.classList.remove("active");
+      });
+
+      if (pages[pageName]) {
+        pages[pageName].classList.add("active");
+      }
+
+
+      navItems.forEach(item => {
+
+        item.classList.toggle(
+          "active",
+          item.dataset.page === pageName
+        );
+
+      });
+
+
+      window.scrollTo({
+        top: 0,
+        behavior: "smooth"
+      });
+
+    }
+
+
+    navItems.forEach(item => {
+
+      item.addEventListener("click", () => {
+
+        showPage(item.dataset.page);
+
+      });
+
+    });
+
+
+    document
+      .getElementById("playPredictionCard")
+      .addEventListener("click", () => {
+        showPage("prediction");
+      });
+
+
+    document
+      .getElementById("playQuestCard")
+      .addEventListener("click", () => {
+        showPage("quest");
+      });
+
+
+    /* =====================================================
+       STOCKS
+    ===================================================== */
+
+    const stocks = [
+
+      {
+        symbol: "NVDAX",
+        bybitSymbol: "NVDAXUSDT",
+        name: "NVIDIA Tokenized Stock",
+        icon: "NV"
+      },
+
+      {
+        symbol: "TSLAX",
+        bybitSymbol: "TSLAXUSDT",
+        name: "Tesla Tokenized Stock",
+        icon: "TS"
+      },
+
+      {
+        symbol: "AAPLX",
+        bybitSymbol: "AAPLXUSDT",
+        name: "Apple Tokenized Stock",
+        icon: "AP"
+      },
+
+      {
+        symbol: "AMZNX",
+        bybitSymbol: "AMZNXUSDT",
+        name: "Amazon Tokenized Stock",
+        icon: "AM"
+      }
+
+    ];
+
+
+    let selectedStockIndex = 0;
+
+    let selectedStock =
+      stocks[selectedStockIndex];
+
+
+    let bybitSocket = null;
+
+    let heartbeatInterval = null;
+
+
+    /* =====================================================
+       PRICE UI
+    ===================================================== */
+
+    const marketSymbol =
+      document.getElementById("marketSymbol");
+
+    const marketName =
+      document.getElementById("marketName");
+
+    const stockIcon =
+      document.getElementById("stockIcon");
+
+    const currentPrice =
+      document.getElementById("currentPrice");
+
+    const priceChange =
+      document.getElementById("priceChange");
+
+    const questionSymbol =
+      document.getElementById("questionSymbol");
+
+    const liveStatus =
+      document.getElementById("liveStatus");
+
+
+    function updateStockUI() {
+
+      selectedStock =
+        stocks[selectedStockIndex];
+
+      marketSymbol.textContent =
+        selectedStock.symbol;
+
+      marketName.textContent =
+        selectedStock.name;
+
+      stockIcon.textContent =
+        selectedStock.icon;
+
+      questionSymbol.textContent =
+        selectedStock.symbol;
+
+      currentPrice.textContent =
+        "--";
+
+      priceChange.textContent =
+        "--";
+
+      priceChange.className =
+        "price-change neutral";
+
+    }
+
+
+    /* =====================================================
+       BYBIT WEBSOCKET
+    ===================================================== */
+
+    function connectBybit() {
+
+      disconnectBybit();
+
+
+      liveStatus.className =
+        "live-status";
+
+      liveStatus.innerHTML =
+        '<span class="live-dot"></span> Connecting to Bybit';
+
+
+      const wsUrl =
+        "wss://stream.bybit.com/v5/public/spot";
+
+
+      try {
+
+        bybitSocket =
+          new WebSocket(wsUrl);
+
+
+        bybitSocket.onopen = () => {
+
+          liveStatus.className =
+            "live-status connected";
+
+          liveStatus.innerHTML =
+            '<span class="live-dot"></span> Live · Bybit';
+
+
+          const subscribeMessage = {
+
+            op: "subscribe",
+
+            args: [
+              "tickers." + selectedStock.bybitSymbol
+            ]
+
+          };
+
+
+          bybitSocket.send(
+            JSON.stringify(subscribeMessage)
+          );
+
+
+          /* heartbeat */
+
+          heartbeatInterval =
+            setInterval(() => {
+
+              if (
+                bybitSocket &&
+                bybitSocket.readyState === WebSocket.OPEN
+              ) {
+
+                bybitSocket.send(
+                  JSON.stringify({
+                    op: "ping"
+                  })
+                );
+
+              }
+
+            }, 20000);
+
+        };
+
+
+        bybitSocket.onmessage = (event) => {
+
+          try {
+
+            const message =
+              JSON.parse(event.data);
+
+
+            /*
+             * We only care about ticker messages.
+             */
+
+            if (
+              !message.topic ||
+              !message.topic.startsWith("tickers.")
+            ) {
+              return;
+            }
+
+
+            if (!message.data) {
+              return;
+            }
+
+
+            /*
+             * Spot ticker returns an object.
+             */
+
+            const data =
+              Array.isArray(message.data)
+                ? message.data[0]
+                : message.data;
+
+
+            if (!data) {
+              return;
+            }
+
+
+            if (
+              data.symbol !==
+              selectedStock.bybitSymbol
+            ) {
+              return;
+            }
+
+
+            /*
+             * LAST PRICE
+             */
+
+            if (data.lastPrice) {
+
+              const price =
+                Number(data.lastPrice);
+
+
+              if (Number.isFinite(price)) {
+
+                currentPrice.textContent =
+                  "$" +
+                  price.toLocaleString(
+                    "en-US",
+                    {
+                      minimumFractionDigits: 2,
+                      maximumFractionDigits: 4
+                    }
+                  );
+
+              }
+
+            }
+
+
+            /*
+             * 24H CHANGE
+             */
+
+            if (
+              data.price24hPcnt !== undefined &&
+              data.price24hPcnt !== null
+            ) {
+
+              const pct =
+                Number(data.price24hPcnt) * 100;
+
+
+              if (Number.isFinite(pct)) {
+
+                const sign =
+                  pct > 0
+                    ? "+"
+                    : "";
+
+                priceChange.textContent =
+                  sign +
+                  pct.toFixed(2) +
+                  "% · 24h";
+
+
+                if (pct > 0) {
+
+                  priceChange.className =
+                    "price-change positive";
+
+                } else if (pct < 0) {
+
+                  priceChange.className =
+                    "price-change negative";
+
+                } else {
+
+                  priceChange.className =
+                    "price-change neutral";
+
+                }
+
+              }
+
+            }
+
+          } catch (error) {
+
+            console.error(
+              "Bybit message parse error:",
+              error
+            );
+
+          }
+
+        };
+
+
+        bybitSocket.onerror = (error) => {
+
+          console.error(
+            "Bybit WebSocket error:",
+            error
+          );
+
+
+          liveStatus.className =
+            "live-status error";
+
+          liveStatus.innerHTML =
+            '<span class="live-dot"></span> Connection error';
+
+        };
+
+
+        bybitSocket.onclose = () => {
+
+          if (heartbeatInterval) {
+
+            clearInterval(
+              heartbeatInterval
+            );
+
+            heartbeatInterval = null;
+
+          }
+
+        };
+
+
+      } catch (error) {
+
+        console.error(
+          "Could not connect to Bybit:",
+          error
+        );
+
+
+        liveStatus.className =
+          "live-status error";
+
+        liveStatus.innerHTML =
+          '<span class="live-dot"></span> Connection error';
+
+      }
+
+    }
+
+
+    /* =====================================================
+       DISCONNECT BYBIT
+    ===================================================== */
+
+    function disconnectBybit() {
+
+      if (heartbeatInterval) {
+
+        clearInterval(
+          heartbeatInterval
+        );
+
+        heartbeatInterval = null;
+
+      }
+
+
+      if (bybitSocket) {
+
+        try {
+          bybitSocket.close();
+        } catch (error) {
+          console.error(error);
+        }
+
+        bybitSocket = null;
+
+      }
+
+    }
+
+
+    /* =====================================================
+       MARKET SELECTOR
+    ===================================================== */
+
+    document
+      .getElementById("marketSelector")
+      .addEventListener("click", () => {
+
+        selectedStockIndex++;
+
+        if (
+          selectedStockIndex >= stocks.length
+        ) {
+
+          selectedStockIndex = 0;
+
+        }
 
 
         updateStockUI();
+
+        connectBybit();
+
+      });
+
+
+    /* =====================================================
+       DIRECTION
+    ===================================================== */
+
+    let direction = null;
+
+    const upButton =
+      document.getElementById("upButton");
+
+    const downButton =
+      document.getElementById("downButton");
+
+
+    function selectDirection(value) {
+
+      direction = value;
+
+
+      upButton.classList.toggle(
+        "selected",
+        value === "up"
+      );
+
+
+      downButton.classList.toggle(
+        "selected",
+        value === "down"
+      );
+
+
+      updatePredictButton();
+
+    }
+
+
+    upButton.addEventListener(
+      "click",
+      () => selectDirection("up")
+    );
+
+
+    downButton.addEventListener(
+      "click",
+      () => selectDirection("down")
+    );
+
+
+    /* =====================================================
+       STAKE
+    ===================================================== */
+
+    let stake = 1000;
+
+    const stakeButtons =
+      document.querySelectorAll(".stake");
+
+
+    stakeButtons.forEach(button => {
+
+      button.addEventListener("click", () => {
+
+        stake =
+          Number(button.dataset.stake);
+
+
+        stakeButtons.forEach(item => {
+
+          item.classList.remove("selected");
+
+        });
+
+
+        button.classList.add("selected");
+
+
+        updatePredictButton();
+
+      });
+
+    });
+
+
+    /* =====================================================
+       PREDICT BUTTON
+    ===================================================== */
+
+    const predictButton =
+      document.getElementById("predictButton");
+
+
+    function updatePredictButton() {
+
+      if (!direction) {
+
+        predictButton.disabled = true;
+
+        predictButton.textContent =
+          "Select UP or DOWN";
+
+        return;
+
+      }
+
+
+      predictButton.disabled = false;
+
+
+      predictButton.textContent =
+        "Predict " +
+        direction.toUpperCase() +
+        " · " +
+        stake.toLocaleString() +
+        " Credits";
+
+    }
+
+
+    predictButton.addEventListener(
+      "click",
+      () => {
+
+        if (!direction) {
+          return;
+        }
+
+
+        showToast(
+          "Prediction placed: " +
+          direction.toUpperCase() +
+          " · " +
+          stake.toLocaleString() +
+          " Credits"
+        );
+
+
+        predictButton.disabled = true;
+
+        predictButton.textContent =
+          "Prediction placed ✓";
 
       }
     );
 
 
-  function updateStockUI() {
-
-    document.getElementById("stockIcon").textContent =
-      selectedStock.icon;
-
-    document.getElementById("marketSymbol").textContent =
-      selectedStock.symbol;
-
-    document.getElementById("marketName").textContent =
-      selectedStock.name;
-
-    document.getElementById("currentPrice").textContent =
-      "$" + selectedStock.price.toFixed(2);
-
-    document.querySelector(".question").textContent =
-      "Will " +
-      selectedStock.symbol +
-      " be higher or lower in 5 minutes?";
-
-  }
-
-
-  /* -------------------------
-     PREDICTION
-  ------------------------- */
-
-  let direction = null;
-  let stake = 100;
-
-
-  const upButton =
-    document.getElementById("upButton");
-
-  const downButton =
-    document.getElementById("downButton");
-
-  const predictButton =
-    document.getElementById("predictButton");
-
-
-  function selectDirection(value) {
-
-    direction = value;
-
-
-    upButton.classList.toggle(
-      "selected",
-      value === "up"
-    );
-
-    downButton.classList.toggle(
-      "selected",
-      value === "down"
-    );
-
-
-    predictButton.disabled = false;
-
-    predictButton.textContent =
-      "Predict " +
-      value.toUpperCase() +
-      " · " +
-      stake.toLocaleString() +
-      " Credits";
-
-  }
-
-
-  upButton.addEventListener(
-    "click",
-    () => selectDirection("up")
-  );
-
-
-  downButton.addEventListener(
-    "click",
-    () => selectDirection("down")
-  );
-
-
-  /* -------------------------
-     STAKE
-  ------------------------- */
-
-  document
-    .querySelectorAll(".stake")
-    .forEach(button => {
-
-      button.addEventListener(
-        "click",
-        () => {
-
-          document
-            .querySelectorAll(".stake")
-            .forEach(item =>
-              item.classList.remove("selected")
-            );
-
-
-          button.classList.add("selected");
-
-
-          stake =
-            Number(button.dataset.stake);
-
-
-          document.getElementById(
-            "stakeDisplay"
-          ).textContent =
-            stake.toLocaleString() +
-            " Credits";
-
-
-          if (direction) {
-
-            predictButton.textContent =
-              "Predict " +
-              direction.toUpperCase() +
-              " · " +
-              stake.toLocaleString() +
-              " Credits";
-
-          }
-
-        }
-      );
-
-    });
-
-
-  /* -------------------------
-     TEST PREDICTION
-  ------------------------- */
-
-  predictButton.addEventListener(
-    "click",
-    () => {
-
-      if (!direction) return;
-
-
-      showToast(
-        "Prediction placed: " +
-        direction.toUpperCase() +
-        " · " +
-        stake.toLocaleString() +
-        " Credits"
-      );
-
-
-      predictButton.disabled = true;
-
-      predictButton.textContent =
-        "Prediction placed ✓";
-
-    }
-  );
-
-
-  /* -------------------------
-     COUNTDOWN
-  ------------------------- */
-
-  let seconds = 299;
-
-
-  function updateCountdown() {
-
-    const minutes =
-      Math.floor(seconds / 60)
-        .toString()
-        .padStart(2, "0");
-
-
-    const secs =
-      (seconds % 60)
-        .toString()
-        .padStart(2, "0");
-
-
-    document.getElementById(
-      "countdown"
-    ).textContent =
-      minutes + ":" + secs;
-
-
-    if (seconds > 0) {
-
-      seconds--;
-
-    } else {
-
-      seconds = 299;
-
-    }
-
-  }
-
-
-  setInterval(
-    updateCountdown,
-    1000
-  );
-
-
-  /* -------------------------
-     TOAST
-  ------------------------- */
-
-  let toastTimer;
-
-
-  function showToast(message) {
+    /* =====================================================
+       TOAST
+    ===================================================== */
 
     const toast =
       document.getElementById("toast");
 
 
-    toast.textContent =
-      message;
+    let toastTimeout;
 
 
-    toast.classList.add("show");
+    function showToast(message) {
+
+      toast.textContent =
+        message;
+
+      toast.classList.add("show");
 
 
-    clearTimeout(toastTimer);
+      clearTimeout(toastTimeout);
 
 
-    toastTimer =
-      setTimeout(
-        () => toast.classList.remove("show"),
-        2500
-      );
+      toastTimeout =
+        setTimeout(() => {
 
-  }
+          toast.classList.remove("show");
 
-</script>
+        }, 2200);
+
+    }
+
+
+    /* =====================================================
+       COUNTDOWN
+    ===================================================== */
+
+    let seconds = 299;
+
+
+    const countdown =
+      document.getElementById("countdown");
+
+
+    function updateCountdown() {
+
+      const minutes =
+        Math.floor(seconds / 60);
+
+      const secs =
+        seconds % 60;
+
+
+      countdown.textContent =
+        String(minutes).padStart(2, "0") +
+        ":" +
+        String(secs).padStart(2, "0");
+
+
+      if (seconds <= 0) {
+
+        seconds = 299;
+
+      } else {
+
+        seconds--;
+
+      }
+
+    }
+
+
+    updateCountdown();
+
+
+    setInterval(
+      updateCountdown,
+      1000
+    );
+
+
+    /* =====================================================
+       INITIALIZE
+    ===================================================== */
+
+    updateStockUI();
+
+    connectBybit();
+
+
+    /* =====================================================
+       CLEANUP
+    ===================================================== */
+
+    window.addEventListener(
+      "beforeunload",
+      () => {
+        disconnectBybit();
+      }
+    );
+
+  </script>
 
 </body>
 </html>
